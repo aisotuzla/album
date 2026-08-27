@@ -42,9 +42,9 @@
     "framer-motion": "^12.40.0",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
-    "react": "^19.2.7",
+    "react": "^19.2.8",
     "react-dom": "^19.2.7",
-    "rollup": "^4.62.2",
+    "rollup": "^4.63.0",
     "vercel": "^54.18.4",
     "vitest": "^4.1.8"
   },
@@ -60,5 +60,17 @@
     "typescript": "~5.8.2",
     "vite": "^6.4.3",
     "vite-plugin-node-polyfills": "^0.28.0"
+  },
+  "allowScripts": {
+    "@google/genai@2.8.0": true,
+    "@reown/appkit@1.8.21": true,
+    "esbuild@0.27.7": true,
+    "esbuild@0.27.0": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true,
+    "bufferutil@4.1.0": true,
+    "protobufjs@7.6.3": true,
+    "secp256k1@4.0.4": true,
+    "utf-8-validate@6.0.6": true
   }
 }

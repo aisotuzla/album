@@ -8,8 +8,19 @@ import { defineConfig } from 'vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(() => ({
-  plugins: [react(), tailwindcss(), nodePolyfills()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+  ],
   define: {
+    'process.env': {},
     global: 'globalThis',
   },
   resolve: {
@@ -46,15 +57,21 @@ export default defineConfig(() => ({
     },
   },
   optimizeDeps: {
-    exclude: [
-      'vite-plugin-node-polyfills/shims/global',
-      'vite-plugin-node-polyfills/shims/buffer',
-      'workbox-cacheable-response',
-      'workbox-expiration',
-      'workbox-precaching',
-      'workbox-range-requests',
-      'workbox-routing',
-      'workbox-strategies',
+    include: [
+      'buffer',
+      '@solana/web3.js',
+      '@solana/wallet-adapter-base',
+      '@solana/wallet-adapter-react',
+      '@solana/wallet-adapter-react-ui',
+      '@solana/wallet-adapter-solflare',
+      '@metaplex-foundation/umi',
+      '@metaplex-foundation/umi-bundle-defaults',
+      '@metaplex-foundation/umi-signer-wallet-adapters',
+      '@metaplex-foundation/mpl-core',
+      '@metaplex-foundation/mpl-toolbox',
+      'lucide-react',
+      'react',
+      'react-dom',
     ],
     esbuildOptions: {
       loader: {
