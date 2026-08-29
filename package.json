@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": ">=24.6.0"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "vite --configLoader native --port=3000 --host=0.0.0.0",
@@ -60,8 +60,8 @@
   "overrides": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@types/react": "$@types/react",
-    "@types/react-dom": "$@types/react-dom"
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19"
   },
   "allowScripts": {
     "@google/genai@2.8.0": true,
