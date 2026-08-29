@@ -47,12 +47,11 @@ import cohort2014Img from "./special_collection/2014.webp";
 import bhfImg from "./special_collection/bhfanaticos.webp";
 import rewardGoldenCrestImg from "./special_collection/RewardGoldenCrest.webp";
 
-const PRIMARY_IPFS_CID = "bafybeigu6pd4t72n7dskbn5wpk5pphf2566xixx5fugw3xhc3cyt44tumy";
+const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
 const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
-const PRIMARY_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
-const BACKUP_IPFS_BASE = `https://${BACKUP_IPFS_CID}.ipfs.dweb.link/components`;
-const DEDIC_IPFS_URL = "https://QmXnbHGb7EuvQ4SupEp6ncU6WHLtfnNZquDTnyhGmoDQyn.ipfs.dweb.link";
-const REWARD_GOLDEN_CREST_URL = "https://bafybeihntowy3cfvf2defm5jiohxxq7lkh6wrrkdr7n5re5yifgvh3upte.ipfs.dweb.link?filename=RewardGoldenCrest.webp";
+const PRIMARY_IPFS_BASE = `https://black-known-amphibian-995.mypinata.cloud/ipfs/${PRIMARY_IPFS_CID}/components`;
+const BACKUP_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
+const REWARD_GOLDEN_CREST_URL = `${PRIMARY_IPFS_BASE}/special_collection/RewardGoldenCrest.webp`;
 
 
 const playerImageMap: Record<string, string> = {
@@ -96,16 +95,21 @@ const playerImageMap: Record<string, string> = {
 
 // Files that live in special_collection/ on IPFS — all others are in players/
 const SPECIAL_COLLECTION_FILES = new Set([
-  "GoldenCrest.webp", "stadionzenica.webp", "2014.webp", "bhfanaticos.webp",
+  "GoldenCrest.webp", "GoldenCrest.png", "stadionzenica.webp", "2014.webp", "Bosnia2014.webp", "bhfanaticos.webp", "RewardGoldenCrest.webp"
 ]);
+
+const IPFS_FILENAME_MAP: Record<string, string> = {
+  "Pi_dedic.webp": "dedic.webp",
+  "Pi_Demirovic.webp": "Demirovic.webp",
+  "Pi_dzeko.webp": "dzeko.webp",
+  "2014.webp": "Bosnia2014.webp",
+};
 
 const getPlayerImage = (sticker: Sticker): { ipfs: string; local: string | null } => {
   if (!sticker.imageFile) return { ipfs: "", local: null };
-  if (sticker.imageFile === "Pi_dedic.webp") return { ipfs: DEDIC_IPFS_URL, local: dedicImg };
   const folder = SPECIAL_COLLECTION_FILES.has(sticker.imageFile) ? "special_collection" : "players";
-  let fileName = sticker.imageFile;
-  if (fileName === "GoldenCrest.webp") fileName = "GoldenCrest.png";
-  const ipfs = `${BACKUP_IPFS_BASE}/${folder}/${fileName}`;
+  const fileName = IPFS_FILENAME_MAP[sticker.imageFile] ?? sticker.imageFile;
+  const ipfs = `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`;
   const local = playerImageMap[sticker.imageFile] ?? null;
   return { ipfs, local };
 };

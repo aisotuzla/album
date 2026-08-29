@@ -46,13 +46,12 @@ import stadionImg from "./special_collection/stadionzenica.webp";
 import cohort2014Img from "./special_collection/2014.webp";
 import bhfImg from "./special_collection/bhfanaticos.webp";
 
-// IPFS config — primary folder plus backup folder CID
-const PRIMARY_IPFS_CID = "bafybeigu6pd4t72n7dskbn5wpk5pphf2566xixx5fugw3xhc3cyt44tumy";
+// IPFS config — primary folder on Pinata plus backup folder CID
+const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
 const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
-const PRIMARY_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
-const BACKUP_IPFS_BASE = `https://${BACKUP_IPFS_CID}.ipfs.dweb.link/components`;
-const DEDIC_IPFS_URL = "https://QmXnbHGb7EuvQ4SupEp6ncU6WHLtfnNZquDTnyhGmoDQyn.ipfs.dweb.link";
-const IPFS_TIMEOUT_MS = 100_000;
+const PRIMARY_IPFS_BASE = `https://black-known-amphibian-995.mypinata.cloud/ipfs/${PRIMARY_IPFS_CID}/components`;
+const BACKUP_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
+const IPFS_TIMEOUT_MS = 5000;
 
 // Local fallback map (Vite bundled imports)
 const LOCAL_IMAGE_MAP: Record<string, string> = {
@@ -112,8 +111,21 @@ const SPECIAL_COLLECTION_FILES = new Set([
   "GoldenCrest.png",
   "stadionzenica.webp",
   "2014.webp",
+  "Bosnia2014.webp",
   "bhfanaticos.webp",
+  "RewardGoldenCrest.webp",
 ]);
+
+const IPFS_FILENAME_MAP: Record<string, string> = {
+  "Pi_dedic.webp": "dedic.webp",
+  "Pi_Demirovic.webp": "Demirovic.webp",
+  "Pi_dzeko.webp": "dzeko.webp",
+  "2014.webp": "Bosnia2014.webp",
+};
+
+function getCleanIpfsFileName(fileName: string): string {
+  return IPFS_FILENAME_MAP[fileName] ?? fileName;
+}
 
 function getIpfsFolder(imageFile: string): string {
   return SPECIAL_COLLECTION_FILES.has(imageFile) ? "special_collection" : "players";
@@ -130,10 +142,8 @@ function buildBackupIpfsUrl(folder: string, fileName: string): string {
 function getPlayerImage(sticker: Sticker, ipfsOk: boolean): string | null {
   if (!sticker.imageFile) return null;
   if (!ipfsOk) return LOCAL_IMAGE_MAP[sticker.imageFile] ?? null;
-  if (sticker.imageFile === "Pi_dedic.webp") return DEDIC_IPFS_URL;
   const folder = getIpfsFolder(sticker.imageFile);
-  let fileName = sticker.imageFile;
-  if (fileName === "GoldenCrest.webp") fileName = "GoldenCrest.png";
+  const fileName = getCleanIpfsFileName(sticker.imageFile);
   return buildIpfsUrl(folder, fileName);
 }
 
@@ -180,14 +190,10 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
   const isMinted = mintedStickers.includes(sticker.id);
 
   // Compute IPFS URI for this card — use filename-based folder, NOT sticker type
-  const cardFileName = sticker.imageFile === "GoldenCrest.webp" ? "GoldenCrest.png" : sticker.imageFile;
-  const cardFolder = getIpfsFolder(cardFileName);
-  const cardIpfsUrl = sticker.imageFile === "Pi_dedic.webp"
-    ? DEDIC_IPFS_URL
-    : (ipfsOk ? buildIpfsUrl(cardFolder, cardFileName) : buildBackupIpfsUrl(cardFolder, cardFileName));
-  const cardIpfsLabel = sticker.imageFile === "Pi_dedic.webp"
-    ? "QmXnbHGb7EuvQ4SupEp6ncU6WHLtfnNZquDTnyhGmoDQyn"
-    : `${(ipfsOk ? PRIMARY_IPFS_CID : BACKUP_IPFS_CID)}/components/${cardFolder}/${cardFileName}`;
+  const cardFileName = getCleanIpfsFileName(sticker.imageFile);
+  const cardFolder = getIpfsFolder(sticker.imageFile);
+  const cardIpfsUrl = ipfsOk ? buildIpfsUrl(cardFolder, cardFileName) : buildBackupIpfsUrl(cardFolder, cardFileName);
+  const cardIpfsLabel = `${(ipfsOk ? PRIMARY_IPFS_CID : BACKUP_IPFS_CID)}/components/${cardFolder}/${cardFileName}`;
 
   const handleMintSticker = async () => {
     if (!walletConnected || (!sandboxMode && !solanaWallet.publicKey)) {
