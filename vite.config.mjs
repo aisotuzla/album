@@ -37,23 +37,7 @@ export default defineConfig(() => ({
         }
         defaultHandler(warning);
       },
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@solana') || id.includes('@metaplex') || id.includes('@noble')) {
-              return 'chunk-solana';
-            }
-            if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
-              return 'chunk-react';
-            }
-            if (id.includes('lucide')) {
-              return 'chunk-icons';
-            }
-            return 'chunk-vendor';
-          }
-        },
-        experimentalMinChunkSize: 10_000,
-      },
+      output: {},
     },
   },
   optimizeDeps: {
