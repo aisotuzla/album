@@ -1,3 +1,5 @@
+export type Language = "BS" | "EN";
+
 export interface PlayerStats {
   overall: number;
   pace: number;
