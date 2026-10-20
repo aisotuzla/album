@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { ArrowLeftRight, Check, Coins, Plus, Trash2, AlertCircle, Sparkles, User, Tag, Loader2 } from "lucide-react";
+import { ArrowLeftRight, Check, Coins, Plus, Trash2, AlertCircle, Sparkles, User, Tag, Loader2 } from "../icons";
 import { Sticker, UserSticker, TradeOffer, WalletState } from "../types";
 import { STICKERS } from "../data/players";
 import { Language } from "../data/translations";

@@ -1,11 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,600;1,400&display=swap');
 @import "tailwindcss";
 
+:root {
+  --font-sans: "Comic Sans MS", "Comic Sans", cursive;
+  --font-serif: "Comic Sans MS", "Comic Sans", cursive;
+}
+
 body {
-  font-family: var(--font-sans);
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
   background: linear-gradient(135deg, #FFF9D4 0%, #FFCD00 50%, #E69D00 100%) !important;
   background-attachment: fixed;
   color: #1a1a1a;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 .album-container {

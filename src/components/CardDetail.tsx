@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { X, Zap, Activity } from "lucide-react";
+import { X, Zap, Activity } from "../icons";
 import { Sticker, UserSticker, StickerType } from "../types";
 import { Language, PLAYER_TRANSLATIONS } from "../data/translations";
 import logoImage from "./zmajevi logo.webp";
@@ -40,11 +40,6 @@ import husejinbasicImg from "./players/husejinbasic.webp";
 import mahmicImg from "./players/mahmic.webp";
 import lukicImg from "./players/lukic.webp";
 
-// Special Collection imports
-import goldenCrestImg from "./special_collection/GoldenCrest.webp";
-import stadionImg from "./special_collection/stadionzenica.webp";
-import cohort2014Img from "./special_collection/2014.webp";
-import bhfImg from "./special_collection/bhfanaticos.webp";
 
 // IPFS config — primary folder on Pinata plus backup folder CID
 const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
@@ -81,10 +76,6 @@ const LOCAL_IMAGE_MAP: Record<string, string> = {
   "husejinbasic.webp": husejinbasicImg,
   "mahmic.webp": mahmicImg,
   "lukic.webp": lukicImg,
-  "GoldenCrest.webp": goldenCrestImg,
-  "stadionzenica.webp": stadionImg,
-  "2014.webp": cohort2014Img,
-  "bhfanaticos.webp": bhfImg,
 };
 
 // Session-level IPFS reachability cache
@@ -96,31 +87,17 @@ function getIpfsStatus(): Promise<boolean> {
   _ipfsPromise = new Promise<boolean>((resolve) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => { ctrl.abort(); _ipfsReachable = false; resolve(false); }, IPFS_TIMEOUT_MS);
-    fetch(`${PRIMARY_IPFS_BASE}/special_collection/GoldenCrest.webp`, { method: "HEAD", signal: ctrl.signal, cache: "no-store" })
+    fetch(`${PRIMARY_IPFS_BASE}/players/nikola-vasilj.webp`, { method: "HEAD", signal: ctrl.signal, cache: "no-store" })
       .then(() => { clearTimeout(timer); _ipfsReachable = true; resolve(true); })
       .catch(() => { clearTimeout(timer); _ipfsReachable = false; resolve(false); });
   });
   return _ipfsPromise;
 }
 
-// Files that actually live in the special_collection/ IPFS folder.
-// NOTE: a sticker can have StickerType.SPECIAL for display/rarity purposes
-// while its image is still in the players/ folder (e.g. Muharemović, Alajbegović).
-const SPECIAL_COLLECTION_FILES = new Set([
-  "GoldenCrest.webp",
-  "GoldenCrest.png",
-  "stadionzenica.webp",
-  "2014.webp",
-  "Bosnia2014.webp",
-  "bhfanaticos.webp",
-  "RewardGoldenCrest.webp",
-]);
-
 const IPFS_FILENAME_MAP: Record<string, string> = {
   "Pi_dedic.webp": "dedic.webp",
   "Pi_Demirovic.webp": "Demirovic.webp",
   "Pi_dzeko.webp": "dzeko.webp",
-  "2014.webp": "Bosnia2014.webp",
 };
 
 function getCleanIpfsFileName(fileName: string): string {
@@ -128,7 +105,7 @@ function getCleanIpfsFileName(fileName: string): string {
 }
 
 function getIpfsFolder(imageFile: string): string {
-  return SPECIAL_COLLECTION_FILES.has(imageFile) ? "special_collection" : "players";
+  return "players";
 }
 
 function buildIpfsUrl(folder: string, fileName: string): string {
@@ -141,7 +118,7 @@ function buildBackupIpfsUrl(folder: string, fileName: string): string {
 
 function getPlayerImage(sticker: Sticker, ipfsOk: boolean): string | null {
   if (!sticker.imageFile) return null;
-  if (!ipfsOk) return LOCAL_IMAGE_MAP[sticker.imageFile] ?? null;
+  if (LOCAL_IMAGE_MAP[sticker.imageFile]) return LOCAL_IMAGE_MAP[sticker.imageFile];
   const folder = getIpfsFolder(sticker.imageFile);
   const fileName = getCleanIpfsFileName(sticker.imageFile);
   return buildIpfsUrl(folder, fileName);
@@ -510,8 +487,8 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                 ) : (
                   <div className="py-2.5 text-center text-[13px] font-medium text-gray-100 italic leading-relaxed">
                     {lang === "BS"
-                      ? "★ Ovaj specijalni kolekcionarski predmet posjeduje posebnu istorijsku težinu. Njegova vrijednost u igri bazira se na unikatnosti i rijetkosti na web3 Solana tržištu sličica!"
-                      : "★ This special collectible is high-level historical memorabilia. Its valuation is fueled purely by physical rarity, scarcity index, and web3 Solana trading market volume!"}
+                      ? "Statistika igraÄa nije dostupna."
+                      : "Player statistics are not available for this card."}
                   </div>
                 )}
               </div>

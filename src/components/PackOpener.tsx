@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Sparkles, ShoppingBag, Coins, Star } from "lucide-react";
+import { Sparkles, ShoppingBag, Coins, Star } from "../icons";
 import { Sticker, WalletState, StickerType } from "../types";
 import { STICKERS } from "../data/players";
 import logoImage from "./zmajevi logo.webp";
 import { Language, UI_TRANSLATIONS, PLAYER_TRANSLATIONS } from "../data/translations";
 
 // Booster pack images
-import bagOfStickersImg from "./Bagofstickers.webp";
-import boosterPackImg from "./BoosterPack.webp";
-import wc2026BoosterImg from "./WC2026_BOOSTER.webp";
+import bagOfStickersImg from "./Bagofstickers405.webp";
+import boosterPackImg from "./BoosterPack405.webp";
+import wc2026BoosterImg from "./WC2026_BOOSTER405.webp";
 
 // Solana & Metaplex Umi imports
 import { useWallet as useSolanaWallet, useConnection } from "@solana/wallet-adapter-react";
@@ -47,11 +47,6 @@ import husejinbasicImg from "./players/husejinbasic.webp";
 import mahmicImg from "./players/mahmic.webp";
 import lukicImg from "./players/lukic.webp";
 
-// Special Collection imports
-import goldenCrestImg from "./special_collection/GoldenCrest.webp";
-import stadionImg from "./special_collection/stadionzenica.webp";
-import cohort2014Img from "./special_collection/2014.webp";
-import bhfImg from "./special_collection/bhfanaticos.webp";
 
 const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
 const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
@@ -86,28 +81,17 @@ const playerImageMap: Record<string, string> = {
   "mahmic.webp": mahmicImg,
   "lukic.webp": lukicImg,
 
-  // Special collection
-  "GoldenCrest.webp": goldenCrestImg,
-  "stadionzenica.webp": stadionImg,
-  "2014.webp": cohort2014Img,
-  "bhfanaticos.webp": bhfImg,
 };
-
-// Files that live in special_collection/ on IPFS — all others are in players/
-const SPECIAL_COLLECTION_FILES = new Set([
-  "GoldenCrest.webp", "GoldenCrest.png", "stadionzenica.webp", "2014.webp", "Bosnia2014.webp", "bhfanaticos.webp", "RewardGoldenCrest.webp"
-]);
 
 const IPFS_FILENAME_MAP: Record<string, string> = {
   "Pi_dedic.webp": "dedic.webp",
   "Pi_Demirovic.webp": "Demirovic.webp",
   "Pi_dzeko.webp": "dzeko.webp",
-  "2014.webp": "Bosnia2014.webp",
 };
 
 const getPlayerImage = (sticker: Sticker): { ipfs: string; local: string | null } => {
   if (!sticker.imageFile) return { ipfs: "", local: null };
-  const folder = SPECIAL_COLLECTION_FILES.has(sticker.imageFile) ? "special_collection" : "players";
+  const folder = "players";
   const fileName = IPFS_FILENAME_MAP[sticker.imageFile] ?? sticker.imageFile;
   const ipfs = `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`;
   const local = playerImageMap[sticker.imageFile] ?? null;
@@ -329,7 +313,7 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
           const isFinalCard = pulled.length === pullCount - 1;
           if (isFinalCard) {
             // Last card guaranteed special or high rating
-            const excitingList = STICKERS.filter(s => !pulledIds.has(s.id) && (s.id >= 25 || (s.stats && s.stats.overall >= 80)));
+            const excitingList = STICKERS.filter(s => !pulledIds.has(s.id) && ((s.stats && s.stats.overall >= 80)));
             rolled = excitingList.length > 0
               ? excitingList[Math.floor(Math.random() * excitingList.length)]
               : STICKERS.filter(s => !pulledIds.has(s.id))[0] ?? STICKERS[0];
@@ -551,10 +535,10 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
                       return (ipfs || local) ? (
                         <div className="relative w-full bg-white flex flex-col justify-end">
                           <img
-                            src={ipfs}
+                            src={local ?? ipfs}
                             alt={revealedStickers[currentIndex].name}
                             className="w-full h-auto object-contain block"
-                            onError={(e) => { if (local) (e.currentTarget as HTMLImageElement).src = local; }}
+                            onError={(e) => { if (local && e.currentTarget.src !== ipfs) (e.currentTarget as HTMLImageElement).src = ipfs; }}
                           />
                         </div>
                       ) : null;

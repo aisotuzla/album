@@ -44,10 +44,10 @@ export default function WelcomeModal({
         {/* Title */}
         <div className="mb-6">
           <span className="inline-block px-3 py-1 bg-gold/10 border border-gold/30 rounded-full text-xs font-sans font-bold text-gold uppercase tracking-wider mb-3">
-            {t.welcomeBadge || "Welcome Collector"}
+            {t.welcomeBadge || "Welcome Collectors"}
           </span>
           <h2 id="welcome-title" className="font-sans font-black text-3xl md:text-4xl text-primary uppercase tracking-tight leading-none mb-3">
-            {t.welcomeHeader || "Zmajevi BiH Album"}
+            {t.welcomeHeader || "Zmajevi BiH NFT Album"}
           </h2>
           <div className="w-16 h-0.5 bg-gradient-to-r from-navy via-gold to-navy mx-auto"></div>
         </div>

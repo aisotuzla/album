@@ -1,6 +1,6 @@
 import React from "react";
 import { qualificationHistory } from "../data/qualificationHistory";
-import { Trophy, Calendar, Shield, Award, MapPin, Zap, Star } from "lucide-react";
+import { Trophy, Calendar, Shield, Award, MapPin, Zap, Star } from "../icons";
 import { Language, UI_TRANSLATIONS } from "../data/translations";
 
 interface HistoryPageProps {

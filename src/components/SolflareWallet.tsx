@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Wallet, Check, AlertCircle, Coins, ExternalLink, Loader2 } from "lucide-react";
+import { Wallet, Check, AlertCircle, Coins, ExternalLink, Loader2 } from "../icons";
 import { WalletState } from "../types";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";

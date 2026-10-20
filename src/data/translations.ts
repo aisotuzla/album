@@ -11,8 +11,6 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     pouchTitle: "Sličice u kesici (nezalijepljene)",
     pouchEmpty: "Vaša kesica je trenutno prazna. Kupite paketiće sa sličicama da sakupite igrače!",
     pouchInstructions: "* Kliknite na bilo koju sličicu u kesici da otvorite njen detaljan prikaz sa statistikama i zalijepite je na njeno mjesto u albumu.",
-    mandateTitle: "Zadatak za kompletiranje albuma",
-    mandateDesc: "Kompletirajte legendarni sastav od 22 bosanskohercegovačka reprezentativca i pronađite 4 \"Specijalne sličice\" (Zlatni grb, Stadion Bilino Polje, Generacija 2014, BHFanaticos) da biste osvojili verifikovani zlatni Metaplex certifikat o završetku!",
     tabAlbum: "Album sa sličicama",
     tabPacks: "Otvaranje paketića",
     tabTrades: "Berza za razmjenu",
@@ -24,7 +22,7 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     welcomeText2: " u Vaš virtuelni novčanik i poklonili Vam ",
     welcomeText3: " kako biste započeli sakupljanje.",
     starterKit1: "Edin Džeko i Ermedin Demirović su već zalijepljeni!",
-    starterKit2: "Holografski zlatni grb (S1) je zalijepljen!",
+    starterKit2: "Sada mo\u017Eete sakupljati preostale igra\u010De reprezentacije!",
     starterKit3: "Duplikat Dennisa Hadžikadunića je dodat u Vašu kesicu!",
     starterKitButton: "Preuzmi početni set i otvori album",
     progressionTitle: "Napredak sakupljanja sličica",
@@ -36,11 +34,9 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     coverMainTitle: "KOLEKCIJA ZMAJEVI 2026",
     coverSubtitle: "Zvanični digitalni sakupljački Web3 album",
     coverHeroes: "HEROJI REPREZENTACIJE",
-    coverCollectibleSlots: "30 KOLEKCIONARSKIH MJESTA",
-    coverText: "Istražite dinamične sastave, statistike igrača i učestvujte u trgovanju sličicama sa drugim sakupljačima. Kompletirajte album i preuzmite svoj Metaplex certifikat.",
+    coverText: "Sakupljajte igra\u010De reprezentacije i trgujte duplikatima sa drugim navija\u010Dima.",
     flipOpenButton: "Prelistaj album",
     wcEdition: "BIH IZDANJE - S.P. 2026",
-    specialSpotsHeader: "Specijalna kolekcija",
     squadPageHeader: "Reprezentacija BiH — Stranica",
     slotRange: "Raspon pozicija",
     emptySlot: "Prazno mjesto",
@@ -128,7 +124,6 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     albumSubtitle: "Kolekcija za Svjetsko prvenstvo 2026.",
     progress: "Napredak",
     claimReward: "Preuzmi nagradu",
-    rewardClaimed: "Nagrada preuzeta",
     standardStickers: "Reprezentativci i rezerve",
     specialCollection: "Posebna kolekcija",
     albumComplete: "Album je kompletiran!",
@@ -242,8 +237,6 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     pouchTitle: "Pouch Unmounted Stickers",
     pouchEmpty: "Your pouch is currently empty. Buy sticker packs to collect players!",
     pouchInstructions: "* Click any card in your unmounted pouch to flip open its full 600x700 stat block, detail metrics, and paste it directly into its album page slot.",
-    mandateTitle: "Special Album Mandate",
-    mandateDesc: "Complete the legendary 22-man Bosnian selection and find the 4 \"Special Collectibles\" (Golden Crest, Stadion Zenica, Generacija 2014, BHFanaticos) to get your verified Metaplex golden certificate of completion!",
     tabAlbum: "Bosnian Album Book",
     tabPacks: "Rip Booster Packs",
     tabTrades: "Solana Swap Center",
@@ -255,7 +248,7 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     welcomeText2: " in your wallet and placed ",
     welcomeText3: " to begin.",
     starterKit1: "Edin Džeko & Ermedin Demirović already mounted!",
-    starterKit2: "Holographic Golden Crest (S1) mounted!",
+    starterKit2: "Collect the remaining national team players to complete your album!",
     starterKit3: "Duplicate Dennis Hadžikadunić added to your pouch!",
     starterKitButton: "Claim Starter Kit & Open Album",
     progressionTitle: "Sticker Collection Progression",
@@ -267,11 +260,9 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     coverMainTitle: "BOSNIA WORLD CUP 2026 COLLECTION",
     coverSubtitle: "Official Digital Web3 Sticker Album",
     coverHeroes: "ZMAJEVI HEROES",
-    coverCollectibleSlots: "30 COLLECTIBLE SLOTS",
-    coverText: "Explore dynamic team selections, physical sticker metrics, and verified peer-to-peer bartering. Complete your binder to mint your Metaplex album certificate.",
+    coverText: "Collect the national team players and trade duplicates with other fans.",
     flipOpenButton: "Flip Open Album",
     wcEdition: "BOSNIAN WC2026 EDITION",
-    specialSpotsHeader: "Special Collection Spots",
     squadPageHeader: "Bosnian Squad — Page",
     slotRange: "Slot Range",
     emptySlot: "Empty / Unmounted Slot",
@@ -359,7 +350,6 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
     albumSubtitle: "World Cup 2026 Collection",
     progress: "Progress",
     claimReward: "Claim Reward",
-    rewardClaimed: "Reward Claimed",
     standardStickers: "Starting XI & Substitutes",
     specialCollection: "Special Collection",
     albumComplete: "Album Complete!",
@@ -645,32 +635,5 @@ export const PLAYER_TRANSLATIONS: Record<number, {
       EN: "A tall, physical target man playing in the Romanian Superliga for Universitatea Cluj. Known for his aerial presence and goalscoring instinct."
     }
   },
-  26: {
-    role: { BS: "Specijalni amblem", EN: "Special Emblem" },
-    biography: {
-      BS: "Holografski amblem Fudbalskog saveza Bosne i Hercegovine u prepoznatljivim plavim i zlatnim nijansama sa sjajnim zvijezdama. Simbol jedinstva, nacionalnog ponosa i vječne sportske strasti miliona građana pod zastavom Zmajeva.",
-      EN: "Holographic Emblem of the Football Association of Bosnia and Herzegovina. Adorned with the national colors of gold and blue, and stars depicting the night sky. The symbol of hope, unity, and deep-seated football patriotisms."
-    }
-  },
-  27: {
-    role: { BS: "Kultni stadion", EN: "Special Venue" },
-    biography: {
-      BS: "Legendarno zeničko 'gnijezdo' i nepobjediva tvrđava reprezentacije BiH. Poznat po nevjerovatno vjernoj, vatrenoj i bučnoj atmosferi gdje navijači sjede tik uz linije terena, kreirajući gromoglasni plavo-žuti talas podrške.",
-      EN: "The historical fortress and spiritual home of the Bosnian National Team in Zenica. Renowned for its incredibly intense atmosphere, where fans sit extremely close to the pitch, creating an intimidating wall."
-    }
-  },
-  28: {
-    role: { BS: "Zlatni jubilej", EN: "Special Milestone" },
-    biography: {
-      BS: "Istorijska ekipa koja je ostvarila prvi plasman Bosne i Hercegovine na jedno veliko takmičenje - Svjetsko prvenstvo u Brazilu 2014. godine. Predvođeni Safetom Sušićem, Spahićem, Misimovićem, Ibiševićem, Lulićem i Džekom, ušli su u vječnost.",
-      EN: "The historic generation of 2014 that qualified for Bosnia's first-ever FIFA World Cup in Brazil. Led by manager Safet Sušić, Spahić, Misimović, Ibišević, Lulić, and Džeko."
-    }
-  },
-  29: {
-    role: { BS: "Slavna podrška", EN: "The 12th Man" },
-    biography: {
-      BS: "Zvanična organizovana navijačka skupina svih nacionalnih timova Bosne i Hercegovine. Putuju po cijelom svijetu od Evrope do Južne Amerike, dajući bezrezervni glas i energiju sa tribina plavo-žutim herojima.",
-      EN: "The ultra fan group of Bosnia and Herzegovina national teams. Traveling across the globe, they paint stadiums in blue and yellow, supporting the team at all costs."
-    }
-  }
+
 };
