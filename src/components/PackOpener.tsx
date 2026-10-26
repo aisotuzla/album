@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Sparkles, ShoppingBag, Coins, Star } from "../icons";
 import { Sticker, WalletState, StickerType } from "../types";
 import { STICKERS } from "../data/players";
+import { getPlayerIpfsUrls } from "../data/playerImages";
 import logoImage from "./zmajevi logo.webp";
 import { Language, UI_TRANSLATIONS, PLAYER_TRANSLATIONS } from "../data/translations";
 
@@ -9,13 +10,6 @@ import { Language, UI_TRANSLATIONS, PLAYER_TRANSLATIONS } from "../data/translat
 import bagOfStickersImg from "./Bagofstickers405.webp";
 import boosterPackImg from "./BoosterPack405.webp";
 import wc2026BoosterImg from "./WC2026_BOOSTER405.webp";
-
-// Solana & Metaplex Umi imports
-import { useWallet as useSolanaWallet, useConnection } from "@solana/wallet-adapter-react";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import { transactionBuilder, publicKey, sol, keypairIdentity, generateSigner } from "@metaplex-foundation/umi";
-import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 
 // Import all uploaded player photos in WebP format
 import dzekoImg from "./players/Pi_dzeko.webp";
@@ -48,11 +42,6 @@ import mahmicImg from "./players/mahmic.webp";
 import lukicImg from "./players/lukic.webp";
 
 
-const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
-const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
-const PRIMARY_IPFS_BASE = `https://black-known-amphibian-995.mypinata.cloud/ipfs/${PRIMARY_IPFS_CID}/components`;
-const BACKUP_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
-
 const playerImageMap: Record<string, string> = {
   "Pi_dzeko.webp": dzekoImg,
   "Pi_Demirovic.webp": demirovicImg,
@@ -83,19 +72,11 @@ const playerImageMap: Record<string, string> = {
 
 };
 
-const IPFS_FILENAME_MAP: Record<string, string> = {
-  "Pi_dedic.webp": "dedic.webp",
-  "Pi_Demirovic.webp": "Demirovic.webp",
-  "Pi_dzeko.webp": "dzeko.webp",
-};
-
-const getPlayerImage = (sticker: Sticker): { ipfs: string; local: string | null } => {
-  if (!sticker.imageFile) return { ipfs: "", local: null };
-  const folder = "players";
-  const fileName = IPFS_FILENAME_MAP[sticker.imageFile] ?? sticker.imageFile;
-  const ipfs = `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`;
+const getPlayerImage = (sticker: Sticker): { ipfs: string; fallbacks: string[]; local: string | null } => {
+  if (!sticker.imageFile) return { ipfs: "", fallbacks: [], local: null };
+  const [ipfs, ...fallbacks] = getPlayerIpfsUrls(sticker.imageFile);
   const local = playerImageMap[sticker.imageFile] ?? null;
-  return { ipfs, local };
+  return { ipfs, fallbacks, local };
 };
 
 interface PackOpenerProps {
@@ -153,28 +134,6 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
   const packCost = activePack?.cost ?? 0.1;
   const t = UI_TRANSLATIONS[lang];
 
-  // Solana connection and Umi setup
-  const solanaWallet = useSolanaWallet();
-  const { connection } = useConnection();
-  const umi = React.useMemo(() => {
-    const u = createUmi(connection.rpcEndpoint);
-    if (sandboxMode) {
-      try {
-        const kp = generateSigner(u);
-        u.use(keypairIdentity(kp));
-      } catch (e) {
-        console.warn("Failed to create sandbox signer for UMI:", e);
-      }
-    } else if (solanaWallet.wallet) {
-      try {
-        u.use(walletAdapterIdentity(solanaWallet));
-      } catch (e) {
-        console.warn("Wallet adapter not initialized:", e);
-      }
-    }
-    return u;
-  }, [connection, solanaWallet, sandboxMode]);
-
   const handlePurchasePack = async (cost: number) => {
     if (!wallet.connected) {
       alert(lang === "BS"
@@ -182,6 +141,14 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
         : "Please connect your Solflare Wallet first to buy a packet!");
       return;
     }
+
+    if (!sandboxMode) {
+      alert(lang === "BS"
+        ? "Kupovina paketa na Devnetu još nije dostupna. SOL nije poslan. Uključite Sandbox način za lokalni demo."
+        : "Devnet pack purchases are not configured yet. No SOL was sent. Enable Sandbox Mode to try the local demo.");
+      return;
+    }
+
     if (wallet.balance < cost) {
       alert(lang === "BS"
         ? "Nedovoljno stanje! Zatražite besplatni faucet SOL na kartici novčanika."
@@ -189,38 +156,19 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
       return;
     }
 
-    // Real Devnet/Mainnet Transaction using Solana Wallet
     setIsProcessing(true);
     try {
-      if (!sandboxMode) {
-        if (!wallet.publicKey) {
-          throw new Error(lang === "BS" ? "Nema javnog ključa novčanika!" : "No wallet public key found!");
-        }
+      await new Promise(r => setTimeout(r, 600));
 
-        // Build transfer transaction sending SOL to the treasury address
-        const tx = transactionBuilder().add(transferSol(umi, {
-          source: umi.identity,
-          destination: publicKey("DrQQhXb2dk99XvhM1Rem7PnKZDkah6C5aFU9Uyd5ju54"),
-          amount: sol(cost)
-        }));
-
-        const result = await tx.sendAndConfirm(umi);
-        console.log("Pack purchase transfer successful. Tx:", result.signature);
-      } else {
-        await new Promise(r => setTimeout(r, 600)); // Simulate delay
-        console.log("Sandbox mode: Bypassed UMI transaction");
-      }
-
-      // Manually decrement the state balance locally so it changes immediately visually
       onWalletChange({
         ...wallet,
         balance: Number((wallet.balance - cost).toFixed(4)),
       });
     } catch (err: any) {
-      console.error("Pack purchase transaction failed:", err);
+      console.error("Sandbox pack purchase failed:", err);
       alert(lang === "BS"
-        ? "Greška prilikom transakcije: " + (err.message || err.toString())
-        : "Transaction failed: " + (err.message || err.toString()));
+        ? "Demo kupovina paketa nije uspjela: " + (err.message || err.toString())
+        : "Sandbox pack purchase failed: " + (err.message || err.toString()));
       setIsProcessing(false);
       return;
     }
@@ -379,6 +327,13 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
 
       {!isBought ? (
         <div className="flex flex-col gap-6 py-4 w-full">
+          {!sandboxMode && (
+            <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+              {lang === "BS"
+                ? "Kupovina paketa i dodjela sličica su lokalni demo. Devnet kupovina nije konfigurirana i nijedan SOL neće biti poslan."
+                : "Pack purchases and sticker delivery are local demo behavior. Devnet purchases are not configured; no SOL will be sent."}
+            </p>
+          )}
           {PACK_CONFIGS.map((pack, idx) => (
             <div
               key={pack.id}
@@ -465,7 +420,7 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
           {packStatus === "ready" && (
             <div className="flex flex-col items-center space-y-6">
               <p className="text-xs font-serif text-[#002F6C] font-bold animate-pulse text-center">
-                {lang === "BS" ? "✓ Sredstva osigurana. Paket je spreman za otvaranje!" : "✓ Pack secured on Solana devnet! Ready to open."}
+                {lang === "BS" ? "✓ Demo paket spreman za otvaranje. Transakcija nije poslana." : "✓ Demo pack ready to open. No blockchain transaction was sent."}
               </p>
 
               {/* Interaction - Show purchased pack image; click to rip */}
@@ -531,14 +486,19 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
                   >
                     {/* If we have an image, show it using an img tag to respect its natural aspect ratio */}
                     {(() => {
-                      const { ipfs, local } = getPlayerImage(revealedStickers[currentIndex]);
-                      return (ipfs || local) ? (
+                      const { ipfs, fallbacks, local } = getPlayerImage(revealedStickers[currentIndex]);
+                      const imageSources = [local, ipfs, ...fallbacks].filter((source): source is string => Boolean(source));
+                      return imageSources.length > 0 ? (
                         <div className="relative w-full bg-white flex flex-col justify-end">
                           <img
-                            src={local ?? ipfs}
+                            src={imageSources[0]}
                             alt={revealedStickers[currentIndex].name}
                             className="w-full h-auto object-contain block"
-                            onError={(e) => { if (local && e.currentTarget.src !== ipfs) (e.currentTarget as HTMLImageElement).src = ipfs; }}
+                            onError={(e) => {
+                              const currentIndex = imageSources.findIndex(source => new URL(source, document.baseURI).href === e.currentTarget.src);
+                              const nextSource = imageSources[currentIndex + 1];
+                              if (nextSource) e.currentTarget.src = nextSource;
+                            }}
                           />
                         </div>
                       ) : null;

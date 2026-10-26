@@ -243,7 +243,7 @@ export default function App() {
             <button
               id="lang-switch-bs"
               onClick={() => handleLangChange("BS")}
-              className={`px-3 py-1.5 rounded-md text-xs font-sans font-black transition-all cursor-pointer ${lang === "BS"
+              className={`px-2 py-1.2 rounded-md text-xs font-sans font-black transition-all cursor-pointer ${lang === "BS"
                 ? "bg-[#002F6C] text-white shadow"
                 : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
                 }`}
@@ -253,7 +253,7 @@ export default function App() {
             <button
               id="lang-switch-en"
               onClick={() => handleLangChange("EN")}
-              className={`px-3 py-1.5 rounded-md text-xs font-sans font-black transition-all cursor-pointer ${lang === "EN"
+              className={`px-2 py-1.2 rounded-md text-xs font-sans font-black transition-all cursor-pointer ${lang === "EN"
                 ? "bg-[#002F6C] text-white shadow"
                 : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
                 }`}
@@ -293,7 +293,7 @@ export default function App() {
         {activeTab === "trades" && <TradeMarket wallet={wallet} onWalletChange={setWallet} collection={collection} onTradeCompleted={handleTradeCompleted} onSelfTradePosted={handleSelfTradePosted} tradeOffers={tradeOffers} onRemoveTradeOffer={handleRemoveTradeOffer} lang={lang} sandboxMode={sandboxMode} />}
         {activeTab === "history" && <HistoryPage lang={lang} />}
       </main>
-      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-[#071b3a]/95 px-1 pb-[env(safe-area-inset-bottom)] pt-1.5 text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] backdrop-blur-lg"><div className="mx-auto grid max-w-[450px] grid-cols-5 gap-1">{([{ id: "album", label: "Album", icon: BookOpen }, { id: "wallet", label: lang === "BS" ? "Novcanik" : "Wallet", icon: WalletCards }, { id: "packs", label: lang === "BS" ? "Paketi" : "Packs", icon: ShoppingBag }, { id: "history", label: lang === "BS" ? "Historija" : "History", icon: History }, { id: "trades", label: lang === "BS" ? "Tržište" : "Market", icon: ArrowLeftRight }] as const).map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? "page" : undefined} onClick={() => setActiveTab(id)} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wide transition ${activeTab === id ? "bg-[#FFCD00] text-[#002F6C]" : "text-white/75 hover:bg-white/10 hover:text-white"}`}><Icon className="h-5 w-5"/><span>{label}</span></button>)}</div></nav>
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-[#071b3a]/95 px-1 pb-[env(safe-area-inset-bottom)] pt-1.5 text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] backdrop-blur-lg"><div className="mx-auto grid max-w-[450px] grid-cols-5 gap-1">{([{ id: "album", label: "Album", icon: BookOpen }, { id: "wallet", label: lang === "BS" ? "Novčanik" : "Wallet", icon: WalletCards }, { id: "packs", label: lang === "BS" ? "Paketi" : "Packs", icon: ShoppingBag }, { id: "history", label: lang === "BS" ? "Historija" : "History", icon: History }, { id: "trades", label: lang === "BS" ? "Tržište" : "Market", icon: ArrowLeftRight }] as const).map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? "page" : undefined} onClick={() => setActiveTab(id)} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wide transition ${activeTab === id ? "bg-[#FFCD00] text-[#002F6C]" : "text-white/75 hover:bg-white/10 hover:text-white"}`}><Icon className="h-5 w-5"/><span>{label}</span></button>)}</div></nav>
       {/* ================= 600px x 700px DETAILED STICKER MODAL ================= */}
       {selectedSticker && (
         <CardDetail

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { X, Zap, Activity } from "../icons";
 import { Sticker, UserSticker, StickerType } from "../types";
 import { Language, PLAYER_TRANSLATIONS } from "../data/translations";
+import { getPlayerIpfsUrls } from "../data/playerImages";
 import logoImage from "./zmajevi logo.webp";
 
 // Solana & Metaplex Umi imports
@@ -42,10 +43,6 @@ import lukicImg from "./players/lukic.webp";
 
 
 // IPFS config — primary folder on Pinata plus backup folder CID
-const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
-const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
-const PRIMARY_IPFS_BASE = `https://black-known-amphibian-995.mypinata.cloud/ipfs/${PRIMARY_IPFS_CID}/components`;
-const BACKUP_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
 const IPFS_TIMEOUT_MS = 5000;
 
 // Local fallback map (Vite bundled imports)
@@ -87,41 +84,19 @@ function getIpfsStatus(): Promise<boolean> {
   _ipfsPromise = new Promise<boolean>((resolve) => {
     const ctrl = new AbortController();
     const timer = setTimeout(() => { ctrl.abort(); _ipfsReachable = false; resolve(false); }, IPFS_TIMEOUT_MS);
-    fetch(`${PRIMARY_IPFS_BASE}/players/nikola-vasilj.webp`, { method: "HEAD", signal: ctrl.signal, cache: "no-store" })
-      .then(() => { clearTimeout(timer); _ipfsReachable = true; resolve(true); })
+    fetch(getPlayerIpfsUrls("nikola-vasilj.webp")[0], { method: "HEAD", signal: ctrl.signal, cache: "no-store" })
+      .then(response => { clearTimeout(timer); _ipfsReachable = response.ok; resolve(response.ok); })
       .catch(() => { clearTimeout(timer); _ipfsReachable = false; resolve(false); });
   });
   return _ipfsPromise;
 }
 
-const IPFS_FILENAME_MAP: Record<string, string> = {
-  "Pi_dedic.webp": "dedic.webp",
-  "Pi_Demirovic.webp": "Demirovic.webp",
-  "Pi_dzeko.webp": "dzeko.webp",
-};
-
-function getCleanIpfsFileName(fileName: string): string {
-  return IPFS_FILENAME_MAP[fileName] ?? fileName;
-}
-
-function getIpfsFolder(imageFile: string): string {
-  return "players";
-}
-
-function buildIpfsUrl(folder: string, fileName: string): string {
-  return `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`;
-}
-
-function buildBackupIpfsUrl(folder: string, fileName: string): string {
-  return `${BACKUP_IPFS_BASE}/${folder}/${fileName}`;
-}
-
-function getPlayerImage(sticker: Sticker, ipfsOk: boolean): string | null {
-  if (!sticker.imageFile) return null;
-  if (LOCAL_IMAGE_MAP[sticker.imageFile]) return LOCAL_IMAGE_MAP[sticker.imageFile];
-  const folder = getIpfsFolder(sticker.imageFile);
-  const fileName = getCleanIpfsFileName(sticker.imageFile);
-  return buildIpfsUrl(folder, fileName);
+function getPlayerImageSources(sticker: Sticker): string[] {
+  if (!sticker.imageFile) return [];
+  const local = LOCAL_IMAGE_MAP[sticker.imageFile];
+  return [local, ...getPlayerIpfsUrls(sticker.imageFile)].filter(
+    (source): source is string => Boolean(source),
+  );
 }
 
 interface CardDetailProps {
@@ -140,6 +115,7 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
   const [foilStyle, setFoilStyle] = useState({ rotateX: 0, rotateY: 0, shineX: 50, shineY: 50 });
   const [scale, setScale] = useState(1);
   const [flipped, setFlipped] = useState(false);
+  const [playerImageIndex, setPlayerImageIndex] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const [ipfsOk, setIpfsOk] = useState<boolean>(true); // optimistic default
 
@@ -151,6 +127,10 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
   useEffect(() => {
     getIpfsStatus().then(ok => setIpfsOk(ok));
   }, []);
+
+  useEffect(() => {
+    setPlayerImageIndex(0);
+  }, [sticker.imageFile]);
 
   const umi = React.useMemo(() => {
     const u = createUmi(connection.rpcEndpoint);
@@ -167,10 +147,9 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
   const isMinted = mintedStickers.includes(sticker.id);
 
   // Compute IPFS URI for this card — use filename-based folder, NOT sticker type
-  const cardFileName = getCleanIpfsFileName(sticker.imageFile);
-  const cardFolder = getIpfsFolder(sticker.imageFile);
-  const cardIpfsUrl = ipfsOk ? buildIpfsUrl(cardFolder, cardFileName) : buildBackupIpfsUrl(cardFolder, cardFileName);
-  const cardIpfsLabel = `${(ipfsOk ? PRIMARY_IPFS_CID : BACKUP_IPFS_CID)}/components/${cardFolder}/${cardFileName}`;
+  const cardIpfsUrls = getPlayerIpfsUrls(sticker.imageFile);
+  const cardIpfsUrl = cardIpfsUrls[ipfsOk ? 0 : 2] ?? cardIpfsUrls[0] ?? "";
+  const cardIpfsLabel = cardIpfsUrl ? new URL(cardIpfsUrl).pathname.slice(1) : "No image URI";
 
   const handleMintSticker = async () => {
     if (!walletConnected || (!sandboxMode && !solanaWallet.publicKey)) {
@@ -288,7 +267,8 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
 
   const hasStickerPouch = userSticker && userSticker.count > 0;
   const isPasted = userSticker && userSticker.pasted;
-  const playerImg = getPlayerImage(sticker, ipfsOk);
+  const playerImageSources = getPlayerImageSources(sticker);
+  const playerImg = playerImageSources[playerImageIndex] ?? null;
 
   // Localized sticker biography
   const bio = PLAYER_TRANSLATIONS[sticker.id]?.biography[lang] || sticker.biography;
@@ -346,16 +326,22 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
             {/* ======================================================== */}
             <div
               style={{
-                backgroundImage: playerImg ? `url(${playerImg})` : undefined,
-                backgroundSize: sticker.type === StickerType.SPECIAL ? "contain" : "cover",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
                 backfaceVisibility: "hidden",
                 transform: "rotateY(0deg)",
               }}
               className={`absolute inset-0 flex flex-col justify-end p-6 rounded-[22px] overflow-hidden transition-all duration-300 ${!playerImg ? "bg-gradient-to-br from-[#002f6c] via-[#091e3b] to-[#011026]" : "bg-white"
                 } ${flipped ? "opacity-0 pointer-events-none z-0" : "opacity-100 z-10"}`}
             >
+              {playerImg && (
+                <img
+                  key={playerImg}
+                  src={playerImg}
+                  alt={sticker.name}
+                  onError={() => setPlayerImageIndex(index => index + 1)}
+                  className={`absolute inset-0 h-full w-full rounded-[22px] ${sticker.type === StickerType.SPECIAL ? "object-contain" : "object-cover"}`}
+                />
+              )}
+
               {/* Micro hologram fiber pattern */}
               <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
 
@@ -403,8 +389,10 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg) translateZ(1px)",
                 transformStyle: "preserve-3d",
+                WebkitFontSmoothing: "auto",
+                textRendering: "geometricPrecision",
               }}
-              className={`absolute inset-0 flex flex-col justify-between p-7 bg-gradient-to-br from-[#021f47] via-[#0b1b30] to-[#010914] text-white flex-shrink-0 rounded-[22px] overflow-hidden transition-all duration-300 antialiased ${flipped ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
+              className={`absolute inset-0 flex flex-col justify-between p-7 bg-gradient-to-br from-[#021f47] via-[#0b1b30] to-[#010914] text-white flex-shrink-0 rounded-[22px] overflow-hidden transition-opacity duration-300 ${flipped ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
                 }`}
             >
               {/* micro grid back pattern */}
@@ -417,18 +405,18 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                     <img src={logoImage} alt="BIH FA Crest" className="h-[2.125rem] w-[2.125rem] object-contain" />
                   </div>
                   <div>
-                    <span className="text-[11px] tracking-[0.18em] text-[#FFCD00] font-extrabold uppercase block leading-none">{lang === "BS" ? "SPECIFIKACIJA KOLEKCIONARA" : "COLLECTOR SPEC SHEET"}</span>
-                    <h2 className="font-bold text-xl text-white mb-0.5 mt-1.5 truncate uppercase leading-tight">
+                    <span className="text-xs tracking-[0.14em] text-[#FFCD00] font-extrabold uppercase block leading-tight">{lang === "BS" ? "SPECIFIKACIJA KOLEKCIONARA" : "COLLECTOR SPEC SHEET"}</span>
+                    <h2 className="font-bold text-2xl text-white mb-0.5 mt-1.5 truncate uppercase leading-tight">
                       {sticker.name}
                     </h2>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-xs font-mono font-bold text-gray-300 block uppercase leading-none">MINT ID:</span>
-                  <span className="text-[#00f0ff] font-mono text-sm font-black tracking-wider block mt-1">#BIH-WC26-{sticker.id.toString().padStart(3, "0")}</span>
+                  <span className="text-sm font-mono font-bold text-gray-200 block uppercase leading-none">MINT ID:</span>
+                  <span className="text-[#00f0ff] font-mono text-base font-black tracking-wider block mt-1">#BIH-WC26-{sticker.id.toString().padStart(3, "0")}</span>
                   <a href={cardIpfsUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-[8px] font-mono text-[#14F195]/70 hover:text-[#14F195] block mt-0.5 truncate max-w-[160px] transition"
+                    className="text-[10px] font-mono text-[#14F195] hover:text-white block mt-0.5 truncate max-w-[160px] transition"
                     title={`IPFS: ${cardIpfsLabel}`}>
                     ⛓ {cardIpfsLabel.slice(0, 22)}…
                   </a>
@@ -441,11 +429,11 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                   <Activity className="h-[1.125rem] w-[1.125rem] text-[#00f0ff]" />
                   <span>{lang === "BS" ? "BIOGRAFIJA I HISTORIJSKE CRTICE" : "BIOGRAPHY & CAREER HISTORIC NOTES"}</span>
                 </h4>
-                <p className="text-[13.5px] text-white leading-relaxed font-sans font-medium pr-2 antialiased">
+                <p className="text-[15px] text-white leading-relaxed font-sans font-semibold pr-2">
                   "{bio}"
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-white/15 text-[13px] font-sans text-gray-200 font-semibold">
+                <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-white/15 text-sm font-sans text-white font-semibold">
                   <div className="flex items-center space-x-1.5">
                     <span className="text-[#FFCD00]">{lang === "BS" ? "Datum rođenja:" : "Date of Birth:"}</span>
                     <span className="text-white font-black">{sticker.birthDate}</span>
@@ -459,7 +447,7 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
 
               {/* Statistics Grid */}
               <div className="bg-white/10 border border-white/20 rounded-2xl p-5 text-left z-20">
-                <h3 className="text-xs uppercase tracking-widest text-[#FFCD00] font-black mb-4 font-sans">
+                <h3 className="text-sm uppercase tracking-[0.12em] text-[#FFCD00] font-black mb-4 font-sans">
                   {lang === "BS" ? "STVARNA FUDBALSKA STATISTIKA" : "REAL-WORLD GAME PERFORMANCE METRICS"}
                 </h3>
 
@@ -474,7 +462,7 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                       { label: lang === "BS" ? "PHY (Fizika)" : "PHY (Physical)", val: sticker.stats.physicality, color: "bg-orange-400" }
                     ].map((s) => (
                       <div key={s.label} className="text-left">
-                        <div className="flex justify-between items-center text-[11.5px] text-gray-100 font-extrabold mb-1">
+                        <div className="flex justify-between items-center text-[13px] text-white font-extrabold mb-1">
                           <span className="truncate max-w-[85px] tracking-wide">{s.label}</span>
                           <span className="text-white font-black">{s.val}</span>
                         </div>
@@ -496,8 +484,8 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
               {/* Back Footer Bar / Actions */}
               <div className="z-20 flex justify-between items-center border-t border-white/20 pt-4 text-left font-sans">
                 <div>
-                  <p className="text-[8.5px] font-bold text-[#FFCD00] uppercase tracking-widest leading-none mb-1">{lang === "BS" ? "SOLANA PAMETNI UGOVOR" : "SOLANA METAPLEX CONTRACT"}</p>
-                  <p className="text-xs text-[#14F195] font-bold flex items-center leading-none">
+                  <p className="text-[10px] font-bold text-[#FFCD00] uppercase tracking-wide leading-tight mb-1">{lang === "BS" ? "SOLANA PAMETNI UGOVOR" : "SOLANA METAPLEX CONTRACT"}</p>
+                  <p className="text-sm text-[#14F195] font-bold flex items-center leading-tight">
                     <span>{lang === "BS" ? "✓ Sertifikat Verifikovan" : "✓ Metaplex Certificate Verified"}</span>
                   </p>
                 </div>

@@ -38,8 +38,10 @@ import lukicImg from "./players/lukic.webp";
 
 const PRIMARY_IPFS_CID = "bafybeiagaakoykbdpfi2u6qvm7uaijzirgrvat5xvuowwn63ceq5mvjmru";
 const BACKUP_IPFS_CID = "bafybeias3nraryezim72augovtpuful6iuriemqux5qrnyw5gl3buh5aua";
+const PLAYER_FALLBACK_IPFS_CID = "bafybeigu6pd4t72n7dskbn5wpk5pphf2566xixx5fugw3xhc3cyt44tumy";
 const PRIMARY_IPFS_BASE = `https://black-known-amphibian-995.mypinata.cloud/ipfs/${PRIMARY_IPFS_CID}/components`;
 const BACKUP_IPFS_BASE = `https://${PRIMARY_IPFS_CID}.ipfs.dweb.link/components`;
+const PLAYER_FALLBACK_IPFS_BASE = `https://gateway.pinata.cloud/ipfs/${PLAYER_FALLBACK_IPFS_CID}/components`;
 
 
 const playerImageMap: Record<string, string> = {
@@ -81,13 +83,17 @@ const IPFS_FILENAME_MAP: Record<string, string> = {
   "Pi_dzeko.webp": "dzeko.webp",
 };
 
-const getPlayerImage = (sticker: Sticker): { ipfs: string; local: string | null } => {
-  if (!sticker.imageFile) return { ipfs: "", local: null };
+const getPlayerImageSources = (sticker: Sticker): string[] => {
+  if (!sticker.imageFile) return [];
   const folder = "players";
   const fileName = IPFS_FILENAME_MAP[sticker.imageFile] ?? sticker.imageFile;
-  const ipfs = `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`;
   const local = playerImageMap[sticker.imageFile] ?? null;
-  return { ipfs, local };
+  return [
+    local,
+    `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`,
+    `${BACKUP_IPFS_BASE}/${folder}/${fileName}`,
+    `${PLAYER_FALLBACK_IPFS_BASE}/${folder}/${fileName}`,
+  ].filter((source): source is string => source !== null);
 };
 
 interface AlbumPageProps {
@@ -167,7 +173,7 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
       </div>
 
       {/* Book Outer Binder */}
-      <div className="relative w-full min-h-0 rounded-lg bg-[#fffef8] border-l-8 md:border-l-[12px] border-[#002F6C] shadow-2xl border-t border-b border-r border-[#d1cfc5] overflow-hidden p-2 sm:p-4 md:p-8 text-gray-800 flex flex-col justify-between">
+      <div className="relative w-full min-h-0 rounded-lg bg-[#fffef8] border-l-8 md:border-l-[12px] border-[#002F6C] border-t border-b border-r border-[#d1cfc5] overflow-hidden p-2 sm:p-4 md:p-8 text-gray-800 flex flex-col justify-between">
 
         {/* ================= COVER PAGE ================= */}
         {currentPage === 0 && (
@@ -269,24 +275,31 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
                     ) : (
                       /* Real pasted sticker card */
                       (() => {
-                        const { ipfs, local } = getPlayerImage(st);
+                        const imageSources = getPlayerImageSources(st);
                         return (
                           <div
-                            className={`w-full border-2 border-[#00f0ff] rounded-xl shadow-sm flex flex-col text-left transition-shadow overflow-hidden ${!ipfs && !local ? "bg-gradient-to-b from-[#124285] to-[#002F6C] aspect-[3/4.2] justify-end" : "bg-white"}`}
+                            className={`w-full border-2 border-[#00f0ff] rounded-xl shadow-sm flex flex-col text-left transition-shadow overflow-hidden ${imageSources.length === 0 ? "bg-gradient-to-b from-[#124285] to-[#002F6C] aspect-[3/4.2] justify-end" : "bg-white"}`}
                           >
-                            {(ipfs || local) && (
+                            {imageSources.length > 0 && (
                               <div className="relative w-full bg-white flex flex-col justify-end">
                                 <img
-                                  src={local ?? ipfs}
+                                  src={imageSources[0]}
+                                  data-source-index="0"
                                   alt={st.name}
                                   className="w-full h-auto object-contain block"
                                   onError={(e) => {
-                                    if (local && e.currentTarget.src !== ipfs) (e.currentTarget as HTMLImageElement).src = ipfs;
+                                    const image = e.currentTarget;
+                                    const currentIndex = Number(image.dataset.sourceIndex ?? "0");
+                                    const nextSource = imageSources[currentIndex + 1];
+                                    if (nextSource) {
+                                      image.dataset.sourceIndex = String(currentIndex + 1);
+                                      image.src = nextSource;
+                                    }
                                   }}
                                 />
                               </div>
                             )}
-                            {!ipfs && !local && (
+                            {imageSources.length === 0 && (
                               <div className="flex-1 flex flex-col items-center justify-center p-4 text-center z-10 relative">
                                 {st.type === StickerType.SPECIAL ? (
                                   <Star className="h-8 w-8 text-[#FFCD00] drop-shadow-[0_0_6px_rgba(255,255,255,0.8)] animate-pulse" />

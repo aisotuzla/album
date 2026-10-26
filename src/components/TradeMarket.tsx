@@ -1,14 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { ArrowLeftRight, Check, Coins, Plus, Trash2, AlertCircle, Sparkles, User, Tag, Loader2 } from "../icons";
 import { Sticker, UserSticker, TradeOffer, WalletState } from "../types";
 import { STICKERS } from "../data/players";
 import { Language } from "../data/translations";
-
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import { transactionBuilder, publicKey, sol, keypairIdentity, generateSigner } from "@metaplex-foundation/umi";
-import { transferSol } from "@metaplex-foundation/mpl-toolbox";
 
 interface TradeMarketProps {
   wallet: WalletState;
@@ -33,28 +27,6 @@ export default function TradeMarket({
   lang,
   sandboxMode,
 }: TradeMarketProps) {
-  const solanaWallet = useWallet();
-  const { connection } = useConnection();
-
-  const umi = useMemo(() => {
-    const u = createUmi(connection.rpcEndpoint);
-    if (sandboxMode) {
-      try {
-        const kp = generateSigner(u);
-        u.use(keypairIdentity(kp));
-      } catch (e) {
-        console.warn("Failed to create sandbox signer for UMI:", e);
-      }
-    } else if (!sandboxMode && solanaWallet.wallet) {
-      try {
-        u.use(walletAdapterIdentity(solanaWallet));
-      } catch (e) {
-        console.warn("Wallet adapter not initialized:", e);
-      }
-    }
-    return u;
-  }, [connection, solanaWallet, sandboxMode]);
-
   const [selectedOfferStickerId, setSelectedOfferStickerId] = useState<number>(-1);
   const [selectedWantStickerId, setSelectedWantStickerId] = useState<number>(-1);
   const [sellingForSol, setSellingForSol] = useState(false);
@@ -75,8 +47,13 @@ export default function TradeMarket({
     setErrorText(null);
     setSuccessText(null);
 
-    if (!wallet.connected || (!sandboxMode && !solanaWallet.publicKey)) {
+    if (!wallet.connected) {
       setErrorText("You must connect your Solflare wallet before listing a trade offer!");
+      return;
+    }
+
+    if (!sandboxMode) {
+      setErrorText("Devnet trade listings and escrow are not configured. No transaction was sent. Enable Sandbox Mode for a local demo.");
       return;
     }
 
@@ -110,27 +87,14 @@ export default function TradeMarket({
     setIsProcessing(true);
 
     try {
-      if (!sandboxMode) {
-        // 1. Simulate Maker signing their portion of the transaction (Partial Signature)
-        // We do a minimal transfer to System Program to prove wallet ownership and intent
-        let tx = transactionBuilder().add(transferSol(umi, {
-          source: umi.identity,
-          destination: umi.identity.publicKey,
-          amount: sol(0.00001)
-        }));
-
-        const result = await tx.sendAndConfirm(umi);
-        console.log("Maker intent signed. Tx:", result.signature);
-      } else {
-        await new Promise(r => setTimeout(r, 600));
-      }
+      await new Promise(r => setTimeout(r, 600));
 
       // Create trade offer
-      const tradeId = "tx-trd-" + Math.random().toString(36).substr(2, 9);
+      const tradeId = "demo-trd-" + Math.random().toString(36).substr(2, 9);
       const newOffer: TradeOffer = {
         id: tradeId,
-        ownerAddress: sandboxMode ? "SANDBOX...WALLET" : solanaWallet.publicKey!.toBase58(),
-        ownerName: sandboxMode ? "Sandbox User" : "My Wallet (" + solanaWallet.publicKey!.toBase58().substring(0, 5) + ")",
+        ownerAddress: "SANDBOX...WALLET",
+        ownerName: "Sandbox User",
         offeredStickerId: selectedOfferStickerId,
         requestedStickerId: sellingForSol ? -1 : selectedWantStickerId,
         solPrice: sellingForSol ? Number(solValue.toFixed(2)) : undefined,
@@ -140,16 +104,16 @@ export default function TradeMarket({
 
       onSelfTradePosted(newOffer);
 
-      // Deduct count of dummy pending block locally
+      // Reserve the offered sticker in local demo inventory.
       onTradeCompleted(selectedOfferStickerId, -1, undefined);
 
-      setSuccessText(`✓ Trade offer #${tradeId.toUpperCase()} listed successfully! Partial Signature verified on Devnet.`);
+      setSuccessText(`✓ Sandbox demo offer #${tradeId.toUpperCase()} added locally. No on-chain transaction was sent.`);
       setSelectedOfferStickerId(-1);
       setSelectedWantStickerId(-1);
       setSellingForSol(false);
     } catch (err: any) {
       console.error(err);
-      setErrorText(err?.message || "Failed to sign trade authorization.");
+      setErrorText(err?.message || "Sandbox demo offer could not be posted.");
     } finally {
       setIsProcessing(false);
     }
@@ -159,12 +123,17 @@ export default function TradeMarket({
     setErrorText(null);
     setSuccessText(null);
 
-    if (!wallet.connected || (!sandboxMode && !solanaWallet.publicKey)) {
+    if (!wallet.connected) {
       setErrorText("Connect your web3 Solana / Solflare wallet card first!");
       return;
     }
 
-    const currentAddress = sandboxMode ? "SANDBOX...WALLET" : solanaWallet.publicKey!.toBase58();
+    if (!sandboxMode) {
+      setErrorText("Devnet trade settlement and escrow are not configured. No transaction was sent. Enable Sandbox Mode for a local demo.");
+      return;
+    }
+
+    const currentAddress = "SANDBOX...WALLET";
     if (offer.ownerAddress === currentAddress) {
       setErrorText("You cannot accept your own trade listings!");
       return;
@@ -190,31 +159,7 @@ export default function TradeMarket({
     setIsProcessing(true);
 
     try {
-      if (!sandboxMode) {
-        // Construct the counter-signature transaction
-        if (offer.solPrice) {
-          // True P2P: Taker transfers SOL directly to Maker
-          let tx = transactionBuilder().add(transferSol(umi, {
-            source: umi.identity,
-            destination: publicKey(offer.ownerAddress),
-            amount: sol(offer.solPrice)
-          }));
-
-          const result = await tx.sendAndConfirm(umi);
-          console.log("Taker P2P SOL transfer signed. Tx:", result.signature);
-        } else {
-          // Taker signs an intent to swap the asset (simulate)
-          let tx = transactionBuilder().add(transferSol(umi, {
-            source: umi.identity,
-            destination: publicKey(offer.ownerAddress),
-            amount: sol(0.00001) // minimal network verification
-          }));
-          const result = await tx.sendAndConfirm(umi);
-          console.log("Taker swap intent signed. Tx:", result.signature);
-        }
-      } else {
-        await new Promise(r => setTimeout(r, 600));
-      }
+      await new Promise(r => setTimeout(r, 600));
 
       if (offer.solPrice) {
         // Update local wallet balance visually
@@ -251,10 +196,10 @@ export default function TradeMarket({
         osc.stop(audioCtx.currentTime + 0.4);
       } catch (_) { }
 
-      setSuccessText(`✓ Trade completed! Received ${getStickerById(offer.offeredStickerId)?.name}. Blockchain synced.`);
+      setSuccessText(`✓ Sandbox demo trade completed locally. No on-chain transaction was sent.`);
     } catch (err: any) {
       console.error(err);
-      setErrorText(err?.message || "Failed to execute trade transaction.");
+      setErrorText(err?.message || "Sandbox demo trade could not be completed.");
     } finally {
       setIsProcessing(false);
     }
@@ -266,11 +211,16 @@ export default function TradeMarket({
       {/* Visual Header */}
       <div className="text-center">
         <h2 className="text-2xl font-sans font-black text-[#002F6C] uppercase tracking-tighter leading-none">
-          Decentralized P2P Sticker Swap Center
+          Sticker Trade Demo
         </h2>
         <p className="text-xs font-serif italic text-gray-500 mt-1">
-          Barter duplicate cards with physical collectors or buy them using Devnet SOL!
+          {sandboxMode ? "Offers are stored locally and simulated." : "Devnet trading is unavailable until an escrow program is configured."}
         </p>
+        {!sandboxMode && (
+          <p role="status" className="mx-auto mt-3 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+            Listings below are local demo data. Live-wallet trade creation and settlement are disabled; no SOL or stickers will be transferred.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -380,12 +330,12 @@ export default function TradeMarket({
               {isProcessing && document.activeElement?.id === "btn-list-swap-offer" ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : null}
-              <span>Broadcast Trade to Ledger</span>
+              <span>Post Demo Offer</span>
             </button>
 
             {!wallet.connected && (
               <p className="text-[10px] font-sans font-bold text-rose-500 text-center">
-                * Please connect a Solana / Solflare wallet to broadcast.
+                * Please connect a wallet to use the sandbox demo.
               </p>
             )}
           </form>
@@ -410,20 +360,20 @@ export default function TradeMarket({
           <div>
             <h3 className="text-md font-sans font-bold text-[#002F6C] mb-4 flex items-center space-x-2">
               <ArrowLeftRight className="h-4.5 w-4.5 text-[#002F6C]" />
-              <span>Active P2P Listings ({tradeOffers.length})</span>
+              <span>Local Demo Listings ({tradeOffers.length})</span>
             </h3>
 
             {tradeOffers.length === 0 ? (
               <div className="p-12 text-center text-gray-500 font-serif italic text-sm border border-dashed border-gray-300 rounded-xl space-y-1">
-                <p>No trade proposals are currently broadcast on the ledger.</p>
-                <p className="text-xs text-gray-400 font-sans font-normal mt-1">Create your own offer above or check back shortly!</p>
+                <p>No local demo offers are available.</p>
+                <p className="text-xs text-gray-400 font-sans font-normal mt-1">Create an offer in Sandbox Mode.</p>
               </div>
             ) : (
               <div className="space-y-3.5 max-h-[380px] overflow-y-auto pr-1">
                 {tradeOffers.map((offer) => {
                   const offerSticker = getStickerById(offer.offeredStickerId);
                   const wantSticker = offer.requestedStickerId !== -1 ? getStickerById(offer.requestedStickerId) : null;
-                  const currentAddress = sandboxMode ? "SANDBOX...WALLET" : solanaWallet.publicKey?.toBase58();
+                  const currentAddress = wallet.publicKey;
                   const isMine = offer.ownerAddress === currentAddress;
 
                   return (
@@ -437,7 +387,7 @@ export default function TradeMarket({
                       {/* Left: Swapping details */}
                       <div className="flex items-center space-x-4">
                         <div className="shrink-0 flex items-center space-x-2 bg-gray-100 py-1.5 px-2.5 rounded-lg border border-gray-200">
-                          <span className="text-[10px] font-sans text-gray-500 font-extrabold uppercase">Tx</span>
+                          <span className="text-[10px] font-sans text-gray-500 font-extrabold uppercase">Demo</span>
                         </div>
 
                         <div className="text-xs font-sans text-left">
@@ -458,7 +408,7 @@ export default function TradeMarket({
                               <User className="h-3 w-3 mr-0.5" /> {offer.ownerName}
                             </span>
                             <span>•</span>
-                            <span>MINT: Metaplex Verified</span>
+                            <span>Local offer · not on-chain</span>
                           </div>
                         </div>
                       </div>
@@ -470,10 +420,10 @@ export default function TradeMarket({
                             id={`btn-cancel-trade-${offer.id}`}
                             onClick={() => onRemoveTradeOffer(offer.id)}
                             className="p-2 px-3 rounded bg-rose-50 hover:bg-rose-100 text-rose-605 border border-rose-200 transition cursor-pointer flex items-center space-x-1 text-xs font-sans font-bold"
-                            title="Revoke Listing"
+                            title="Remove local demo offer"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
-                            <span>Revoke</span>
+                            <span>Remove</span>
                           </button>
                         ) : (
                           <button
@@ -485,7 +435,7 @@ export default function TradeMarket({
                             {isProcessing && document.activeElement?.id === `btn-accept-trade-${offer.id}` ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : null}
-                            <span>Fill Offer</span>
+                            <span>Accept Demo</span>
                           </button>
                         )}
                       </div>
@@ -499,7 +449,7 @@ export default function TradeMarket({
 
           <div className="mt-4 pt-4 border-t border-gray-200 flex items-center space-x-2 text-xs font-serif italic text-gray-500">
             <Sparkles className="h-4 w-4 text-[#FFCD00]" />
-            <span>All trades use simulated zero-trust blockchain signatures for safe swap resolution.</span>
+            <span>Demo listings are stored in this browser. On-chain escrow and trade settlement are not implemented; live-wallet trade actions are disabled.</span>
           </div>
 
         </div>
