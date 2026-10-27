@@ -30,10 +30,11 @@ select {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(0, 11, 108, 0.199) 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
+  background-image: url("./assets/Zlatni_Ljiljan100.webp");
+  background-size: 120px 120px;
+  background-repeat: repeat;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.1;
   z-index: -1;
 }
 
