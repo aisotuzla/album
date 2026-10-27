@@ -58,6 +58,7 @@ const playerImageMap: Record<string, string> = {
   "gigovic.webp": gigovicImg,
   "Gigovic.webp": gigovicImg,
   "tarik-muharemovic.webp": muharemovicImg,
+  "muharemovic.webp": muharemovicImg,
   "ivan-basic.webp": basicImg,
 
   "mujakic.webp": mujakicImg,

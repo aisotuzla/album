@@ -23,7 +23,7 @@ import alajbegovicImg from "./players/kenan-alajbegovic.webp";
 import bazdarImg from "./players/samed-bazdar.webp";
 import radeljicImg from "./players/stjepan-radeljic.webp";
 import gigovicImg from "./players/gigovic.webp";
-import muharemovicImg from "./players/muharemovic.webp";
+import muharemovicImg from "./players/tarik-muharemovic.webp";
 import basicImg from "./players/ivan-basic.webp";
 import amirImg from "./players/amir-hadziahmetovic.webp";
 import mujakicImg from "./players/mujakic.webp";
@@ -55,6 +55,7 @@ const playerImageMap: Record<string, string> = {
   "stjepan-radeljic.webp": radeljicImg,
   "gigovic.webp": gigovicImg,
   "muharemovic.webp": muharemovicImg,
+  "tarik-muharemovic.webp": muharemovicImg,
   "ivan-basic.webp": basicImg,
   "mujakic.webp": mujakicImg,
   "nikola-vasilj.webp": vasiljImg,

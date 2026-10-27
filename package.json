@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "engines": {
-    "node": "26.x"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "vite --configLoader native --port=3000 --host=0.0.0.0",
@@ -75,6 +75,10 @@
     "esbuild": true,
     "protobufjs": true,
     "secp256k1": true,
-    "utf-8-validate": true
+    "utf-8-validate": true,
+    "classic-level@1.4.1": true,
+    "electron@1.8.8": true,
+    "iso-constants@0.1.2": true,
+    "wrtc@0.4.7": true
   }
 }
