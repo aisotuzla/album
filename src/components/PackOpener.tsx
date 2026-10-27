@@ -12,9 +12,9 @@ import boosterPackImg from "./BoosterPack405.webp";
 import wc2026BoosterImg from "./WC2026_BOOSTER405.webp";
 
 // Import all uploaded player photos in WebP format
-import dzekoImg from "./players/Pi_dzeko.webp";
-import demirovicImg from "./players/Pi_Demirovic.webp";
-import dedicImg from "./players/Pi_dedic.webp";
+import dzekoImg from "./players/edin-dzeko.webp";
+import demirovicImg from "./players/ermedin-Demirovic.webp";
+import dedicImg from "./players/amar-dedic.webp";
 import tahirovicImg from "./players/benjamin-tahirovic.webp";
 import burnicImg from "./players/denis-burnic.webp";
 import memicImg from "./players/amer-memic.webp";
@@ -43,9 +43,9 @@ import lukicImg from "./players/lukic.webp";
 
 
 const playerImageMap: Record<string, string> = {
-  "Pi_dzeko.webp": dzekoImg,
-  "Pi_Demirovic.webp": demirovicImg,
-  "Pi_dedic.webp": dedicImg,
+  "edin-dzeko.webp": dzekoImg,
+  "ermedin-Demirovic.webp": demirovicImg,
+  "amar-dedic.webp": dedicImg,
   "benjamin-tahirovic.webp": tahirovicImg,
   "denis-burnic.webp": burnicImg,
   "amer-memic.webp": memicImg,
@@ -427,7 +427,7 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
               <div
                 id="interactive-tear-envelope"
                 onClick={handleRipPack}
-                className="group relative w-60 h-80 rounded-2xl overflow-hidden border-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.65)] cursor-pointer hover:border-[#00e5ff] hover:shadow-[0_0_35px_rgba(0,240,255,0.95)] transition-all bg-black flex items-center justify-center shrink-0"
+                className="group relative w-60 h-80 rounded-2xl overflow-hidden border-2 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.65)] cursor-pointer hover:border-[#00e5ff] hover:shadow-[0_0_35px_rgba(0,240,255,0.95)] transition-all bg-black flex items-center justify-center shrink-0"
               >
                 {activePack && (
                   <img
@@ -451,7 +451,7 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
 
           {packStatus === "tearing" && (
             <div className="flex flex-col items-center py-20 space-y-4">
-              <div className="w-10 h-10 rounded-full border-4 border-[#002F6C] border-t-transparent animate-spin" />
+              <div className="w-10 h-10 rounded-full border-2 border-[#002F6C] border-t-transparent animate-spin" />
               <p className="text-[#002F6C] font-serif italic text-sm animate-pulse text-center">
                 {lang === "BS" ? "Otvaranje metaliziranog paketića..." : "Ripping foil envelope & loading entropy..."}
               </p>
@@ -480,7 +480,7 @@ export default function PackOpener({ wallet, onWalletChange, onAddStickers, onVi
                   {/* Pack Sticker Display — matches album card style */}
                   <div
                     onClick={() => onViewSticker(revealedStickers[currentIndex])}
-                    className={`relative w-56 sm:w-64 rounded-2xl border-4 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.6)] flex flex-col text-left cursor-pointer hover:scale-[1.02] hover:shadow-[0_0_28px_rgba(0,240,255,0.85)] transition-all overflow-hidden ${
+                    className={`relative w-56 sm:w-64 rounded-2xl border-2 border-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.6)] flex flex-col text-left cursor-pointer hover:scale-[1.02] hover:shadow-[0_0_28px_rgba(0,240,255,0.85)] transition-all overflow-hidden ${
                       !getPlayerImage(revealedStickers[currentIndex]).ipfs && !getPlayerImage(revealedStickers[currentIndex]).local ? "bg-gradient-to-b from-[#124285] to-[#002F6C] aspect-[3/4.2] justify-end" : "bg-white"
                     }`}
                   >

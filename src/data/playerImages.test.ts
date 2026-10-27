@@ -10,16 +10,10 @@ describe("getPlayerIpfsUrls", () => {
     ]);
   });
 
-  it("preserves established filenames for legacy card image names", () => {
-    expect(getPlayerIpfsUrls("Pi_dzeko.webp")[0]).toContain("/players/dzeko.webp");
-    expect(getPlayerIpfsUrls("Pi_Demirovic.webp")[0]).toContain("/players/Demirovic.webp");
-    expect(getPlayerIpfsUrls("Pi_dedic.webp")[0]).toContain("/players/dedic.webp");
-  });
-
-  it("uses original legacy filenames in the fallback IPFS mirror", () => {
-    expect(getPlayerIpfsUrls("Pi_dzeko.webp")[2]).toContain("/players/Pi_dzeko.webp");
-    expect(getPlayerIpfsUrls("Pi_Demirovic.webp")[2]).toContain("/players/Pi_Demirovic.webp");
-    expect(getPlayerIpfsUrls("Pi_dedic.webp")[2]).toContain("/players/Pi_dedic.webp");
+  it("uses the current player image filenames across IPFS gateways", () => {
+    for (const imageFile of ["edin-dzeko.webp", "amar-dedic.webp", "ermedin-Demirovic.webp"]) {
+      expect(getPlayerIpfsUrls(imageFile).every((url) => url.endsWith(`/players/${imageFile}`))).toBe(true);
+    }
   });
 
   it("returns no remote URLs for a missing filename", () => {

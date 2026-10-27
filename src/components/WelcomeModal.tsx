@@ -36,7 +36,7 @@ export default function WelcomeModal({
           <img
             src="/src/components/zmajevi logo.webp"
             alt="Zmajevi BiH Logo"
-            className="relative w-full h-full object-contain rounded-full border-4 border-gold/30"
+            className="relative w-full h-full object-contain rounded-full border-2 border-gold/30"
             referrerPolicy="no-referrer"
           />
         </div>

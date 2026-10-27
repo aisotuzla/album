@@ -312,7 +312,7 @@ export default function App() {
       {/* ================= IN-APP WELCOME INSTRUCTIONS ONBOARDING ================= */}
       {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/95 backdrop-blur-sm">
-          <div className="bg-[#fffef8] border-4 border-[#00f0ff] rounded-3xl p-6 md:p-8 max-w-lg w-full text-center space-y-6 shadow-[0_0_25px_rgba(0,240,255,0.7)] text-gray-800">
+          <div className="bg-[#fffef8] border-2 border-[#00f0ff] rounded-3xl p-6 md:p-8 max-w-lg w-full text-center space-y-6 shadow-[0_0_25px_rgba(0,240,255,0.7)] text-gray-800">
             <img src={logoImage} alt="Zmajevi Logo" className="mx-auto h-24 w-24 object-contain" referrerPolicy="no-referrer" />
 
             <div className="space-y-2">

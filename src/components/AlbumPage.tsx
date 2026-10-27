@@ -8,9 +8,9 @@ import rewardGoldenCrestImg from "./RewardGoldenCrest.webp";
 import { Language, UI_TRANSLATIONS, PLAYER_TRANSLATIONS } from "../data/translations";
 
 // Import all uploaded player photos in WebP format
-import dzekoImg from "./players/Pi_dzeko.webp";
-import demirovicImg from "./players/Pi_Demirovic.webp";
-import dedicImg from "./players/Pi_dedic.webp";
+import dzekoImg from "./players/edin-dzeko.webp";
+import demirovicImg from "./players/ermedin-Demirovic.webp";
+import dedicImg from "./players/amar-dedic.webp";
 import tahirovicImg from "./players/benjamin-tahirovic.webp";
 import burnicImg from "./players/denis-burnic.webp";
 import memicImg from "./players/amer-memic.webp";
@@ -45,9 +45,9 @@ const PLAYER_FALLBACK_IPFS_BASE = `https://gateway.pinata.cloud/ipfs/${PLAYER_FA
 
 
 const playerImageMap: Record<string, string> = {
-  "Pi_dzeko.webp": dzekoImg,
-  "Pi_Demirovic.webp": demirovicImg,
-  "Pi_dedic.webp": dedicImg,
+  "edin-dzeko.webp": dzekoImg,
+  "ermedin-Demirovic.webp": demirovicImg,
+  "amar-dedic.webp": dedicImg,
   "benjamin-tahirovic.webp": tahirovicImg,
   "denis-burnic.webp": burnicImg,
   "amer-memic.webp": memicImg,
@@ -77,22 +77,15 @@ const playerImageMap: Record<string, string> = {
   "lukic.webp": lukicImg,
 };
 
-const IPFS_FILENAME_MAP: Record<string, string> = {
-  "Pi_dedic.webp": "dedic.webp",
-  "Pi_Demirovic.webp": "Demirovic.webp",
-  "Pi_dzeko.webp": "dzeko.webp",
-};
-
 const getPlayerImageSources = (sticker: Sticker): string[] => {
   if (!sticker.imageFile) return [];
   const folder = "players";
-  const fileName = IPFS_FILENAME_MAP[sticker.imageFile] ?? sticker.imageFile;
   const local = playerImageMap[sticker.imageFile] ?? null;
   return [
     local,
-    `${PRIMARY_IPFS_BASE}/${folder}/${fileName}`,
-    `${BACKUP_IPFS_BASE}/${folder}/${fileName}`,
-    `${PLAYER_FALLBACK_IPFS_BASE}/${folder}/${fileName}`,
+    `${PRIMARY_IPFS_BASE}/${folder}/${sticker.imageFile}`,
+    `${BACKUP_IPFS_BASE}/${folder}/${sticker.imageFile}`,
+    `${PLAYER_FALLBACK_IPFS_BASE}/${folder}/${sticker.imageFile}`,
   ].filter((source): source is string => source !== null);
 };
 

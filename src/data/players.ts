@@ -46,7 +46,7 @@ export const STICKERS: Sticker[] = [
     gameRatingRef: "FC26 Rating: 79",
     type: StickerType.STANDARD,
     imageTheme: "from-blue-500 via-cyan-800 to-indigo-950",
-    imageFile: "Pi_dedic.webp"
+    imageFile: "amar-dedic.webp"
   },
   {
     id: 3,
@@ -232,7 +232,7 @@ export const STICKERS: Sticker[] = [
     gameRatingRef: "FC26 Rating: 81",
     type: StickerType.STANDARD,
     imageTheme: "from-blue-600 via-zinc-800 to-indigo-950",
-    imageFile: "Pi_Demirovic.webp"
+    imageFile: "ermedin-Demirovic.webp"
   },
   {
     id: 11,
@@ -255,7 +255,7 @@ export const STICKERS: Sticker[] = [
     gameRatingRef: "FC26 Rating: 83",
     type: StickerType.STANDARD,
     imageTheme: "from-blue-600 via-zinc-800 to-indigo-950",
-    imageFile: "Pi_dzeko.webp"
+    imageFile: "edin-dzeko.webp"
   },
 
   // ==================== SUBSTITUTIONS (Indices 11 - 21) ====================

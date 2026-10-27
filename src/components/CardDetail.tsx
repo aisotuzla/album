@@ -13,9 +13,9 @@ import { generateSigner } from "@metaplex-foundation/umi";
 import { create } from "@metaplex-foundation/mpl-core";
 
 // Import all uploaded player photos in WebP format
-import dzekoImg from "./players/Pi_dzeko.webp";
-import demirovicImg from "./players/Pi_Demirovic.webp";
-import dedicImg from "./players/Pi_dedic.webp";
+import dzekoImg from "./players/edin-dzeko.webp";
+import demirovicImg from "./players/ermedin-Demirovic.webp";
+import dedicImg from "./players/amar-dedic.webp";
 import tahirovicImg from "./players/benjamin-tahirovic.webp";
 import burnicImg from "./players/denis-burnic.webp";
 import memicImg from "./players/amer-memic.webp";
@@ -47,9 +47,9 @@ const IPFS_TIMEOUT_MS = 5000;
 
 // Local fallback map (Vite bundled imports)
 const LOCAL_IMAGE_MAP: Record<string, string> = {
-  "Pi_dzeko.webp": dzekoImg,
-  "Pi_Demirovic.webp": demirovicImg,
-  "Pi_dedic.webp": dedicImg,
+  "edin-dzeko.webp": dzekoImg,
+  "ermedin-Demirovic.webp": demirovicImg,
+  "amar-dedic.webp": dedicImg,
   "benjamin-tahirovic.webp": tahirovicImg,
   "denis-burnic.webp": burnicImg,
   "amer-memic.webp": memicImg,
@@ -318,7 +318,7 @@ export default function CardDetail({ sticker, userSticker, onClose, onPaste, wal
                 : `perspective(1000px) rotateX(${foilStyle.rotateX}deg) rotateY(${foilStyle.rotateY}deg)`,
               transition: flipped ? "transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)" : "transform 0.1s ease-out",
             }}
-            className="relative rounded-3xl shadow-[0_0_40px_rgba(0,240,255,0.7)] border-4 border-[#00f0ff]"
+            className="relative rounded-3xl shadow-[0_0_40px_rgba(0,240,255,0.7)] <border-2></border-2> border-[#00f0ff]"
           >
 
             {/* ======================================================== */}
