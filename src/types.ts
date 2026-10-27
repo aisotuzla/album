@@ -27,7 +27,7 @@ export interface Sticker {
   biography: string;
   biographyBS?: string;
   stats?: PlayerStats; // Null for special collections
-  gameRatingRef: string; // E.g., "FC24 Overall: 84"
+  gameRatingRef: string; // E.g., "FC26 Overall: 84"
   type: StickerType;
   imageTheme: string; // Color scheme gradient classes (foil look, golden, sky)
   imageFile?: string; // Opt-in filename in components/players/

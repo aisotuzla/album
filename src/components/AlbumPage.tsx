@@ -19,7 +19,7 @@ import alajbegovicImg from "./players/kenan-alajbegovic.webp";
 import bazdarImg from "./players/samed-bazdar.webp";
 import radeljicImg from "./players/stjepan-radeljic.webp";
 import gigovicImg from "./players/gigovic.webp";
-import muharemovicImg from "./players/muharemovic.webp";
+import muharemovicImg from "./players/tarik-muharemovic.webp";
 import basicImg from "./players/ivan-basic.webp";
 import mujakicImg from "./players/mujakic.webp";
 
@@ -57,10 +57,8 @@ const playerImageMap: Record<string, string> = {
   "stjepan-radeljic.webp": radeljicImg,
   "gigovic.webp": gigovicImg,
   "Gigovic.webp": gigovicImg,
-  "muharemovic.webp": muharemovicImg,
-  "Muharemovic.webp": muharemovicImg,
+  "tarik-muharemovic.webp": muharemovicImg,
   "ivan-basic.webp": basicImg,
-
 
   "mujakic.webp": mujakicImg,
   "nikola-vasilj.webp": vasiljImg,
@@ -136,37 +134,8 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
   return (
     <div className="w-full flex flex-col items-center space-y-4 sm:space-y-6">
 
-      {/* Album collection status tracker board */}
-      <div className="w-full bg-white border border-gray-300 p-4 sm:p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-5 shadow-sm text-gray-800">
-        <div className="flex items-center space-x-3.5">
-          <div className="p-3 bg-[#002F6C]/10 rounded-xl text-[#002F6C]">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <div className="text-left font-sans">
-            <h3 className="font-bold text-[16px] text-[#002F6C] uppercase tracking-tight">{t.progressionTitle}</h3>
-            <p className="text-xs italic text-gray-500">
-              {t.pastedCountLabel}: <span className="text-[#002F6C] font-bold">{pastedCount}</span> {t.ofLabel} {totalPossible} {t.spotsLabel}
-            </p>
-          </div>
-        </div>
-
-        {/* Dynamic gauge bar */}
-        <div className="flex-1 max-w-md w-full font-sans">
-          <div className="flex justify-between items-center mb-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-            <span>{t.progressLabel}</span>
-            <span className="text-[#002F6C] font-bold">{progressPercent}%</span>
-          </div>
-          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden p-0.5">
-            <div
-              className="h-full bg-[#002F6C] rounded-full transition-all duration-700"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Book Outer Binder */}
-      <div className="relative w-full min-h-0 rounded-lg bg-[#fffef8] border-l-8 md:border-l-[12px] border-[#002F6C] border-t border-b border-r border-[#d1cfc5] overflow-hidden p-2 sm:p-4 md:p-8 text-gray-800 flex flex-col justify-between">
+      <div className="relative w-full min-h-0 rounded-lg bg-[#fffef8] border-l-8 md:border-l-[12px] border-[#002F6C] border-t border-b border-r border-[#d1cfc5] overflow-hidden p-2 sm:p-4 lg:p-6 xl:p-8 text-gray-800 flex flex-col justify-between">
 
         {/* ================= COVER PAGE ================= */}
         {currentPage === 0 && (
@@ -183,13 +152,13 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
               className={`absolute inset-0 transition-transform duration-700 ease-in-out translate-y-0`}
             >
               {/* Button at bottom */}
-              <div className="absolute bottom-10 left-0 right-0 flex justify-center">
+              <div className="absolute bottom-4 sm:bottom-7 lg:bottom-10 left-0 right-0 flex justify-center">
                 <button
                   id="album-flip-open-btn"
                   onClick={() => {
                     handleNextPage();
                   }}
-                  className="py-3 px-8 rounded-lg bg-[#002F6C] hover:bg-[#0c3f82] text-white font-sans font-bold uppercase text-xs tracking-wider transition shadow-sm flex items-center space-x-2 cursor-pointer"
+                  className="py-2.5 px-5 sm:py-3 sm:px-8 rounded-lg bg-[#002F6C] hover:bg-[#0c3f82] text-white font-sans font-bold uppercase text-[clamp(0.6875rem,0.9vw,0.875rem)] tracking-wider transition shadow-sm flex items-center space-x-2 cursor-pointer"
                 >
                   <span>{t.flipOpenButton}</span>
                   <ChevronRight className="h-4 w-4 text-white" />
@@ -208,7 +177,7 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
                 <span className="text-[10px] tracking-widest text-[#002F6C] font-bold uppercase">
                   {t.wcEdition}
                 </span>
-                <h2 className="text-[16px] font-black text-[#002F6C] uppercase leading-none">
+                <h2 className="text-sm sm:text-base lg:text-lg font-black text-[#002F6C] uppercase leading-tight">
                   {`${lang === "BS" ? "Sastav BiH — Stranica" : "Bosnian Squad — Page"} ${currentPage}`}
                 </h2>
               </div>
@@ -235,19 +204,19 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
                   >
                     {!isPasted ? (
                       /* Empty Dotted slot where sticker goes */
-                      <div className="relative w-full aspect-[3/4.2] border-2 border-dashed border-gray-300 hover:border-[#002F6C] bg-white/45 flex flex-col justify-between p-3.5 text-center transition rounded-xl overflow-hidden">
+                      <div className="relative w-full aspect-[3/4.2] border-2 border-dashed border-gray-300 hover:border-[#002F6C] bg-white/45 flex flex-col justify-between p-1.5 min-[360px]:p-2 sm:p-3 lg:p-3.5 text-center transition rounded-xl overflow-hidden">
                         {/* Background crest with lowest opacity possible over card space so it does not look too white */}
                         <img
                           src={rewardGoldenCrestImg}
                           alt="Reward Golden Crest"
-                          className="absolute inset-0 m-auto w-3/4 h-3/4 object-contain opacity-[0.07] pointer-events-none select-none z-0"
+                          className="absolute inset-0 m-auto w-4/4 h-4/4 object-contain opacity-[0.07] pointer-events-none select-none z-0"
                         />
                         <div className="relative z-10 flex justify-between items-start font-sans">
-                          <span className="text-[10px] text-gray-500 font-extrabold bg-[#f4f2e9] border border-gray-300 px-1.5 py-0.5 rounded shadow-sm flex-shrink-0">
+                          <span className="text-[clamp(0.5625rem,0.75vw,0.75rem)] text-gray-500 font-extrabold bg-[#f4f2e9] border border-gray-300 px-1.5 py-0.5 rounded shadow-sm flex-shrink-0">
                             {st.number}
                           </span>
                           {balanceCount > 0 && (
-                            <span className="text-[8px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 animate-pulse font-bold">
+                            <span className="text-[clamp(0.5rem,0.65vw,0.6875rem)] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200 animate-pulse font-bold">
                               {balanceCount} {lang === "BS" ? "u kesici" : "in pouch"}
                             </span>
                           )}
@@ -255,13 +224,13 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
 
                         <div className="relative z-10 my-auto py-2">
                           <div className="h-6 w-6 text-gray-400 mx-auto mb-1 flex items-center justify-center text-lg">👤</div>
-                          <h4 className="font-sans font-black text-xs text-gray-700 truncate tracking-tight uppercase">
+                          <h4 className="font-sans font-black text-[clamp(0.625rem,0.9vw,0.875rem)] text-gray-700 truncate tracking-tight uppercase">
                             {st.name}
                           </h4>
-                          <span className="text-[8px] sm:text-[9px] text-gray-500 italic block mt-0.5">{displayRole} • {st.club}</span>
+                          <span className="text-[clamp(0.5rem,0.7vw,0.75rem)] text-gray-500 italic block mt-0.5">{displayRole} • {st.club}</span>
                         </div>
 
-                        <div className="relative z-10 text-[8px] font-sans text-gray-400 font-bold uppercase tracking-wider text-center">
+                        <div className="relative z-10 text-[clamp(0.5rem,0.65vw,0.6875rem)] font-sans text-gray-400 font-bold uppercase tracking-wider text-center">
                           {st.type === StickerType.SPECIAL ? (lang === "BS" ? "★ Specijalno" : "★ Special") : (lang === "BS" ? "Standardno" : "Standard")}
                         </div>
                       </div>
@@ -314,7 +283,7 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
               };
 
               return (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 flex-1 items-start px-1 animate-fade-in">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3 lg:gap-5 flex-1 items-start px-1 animate-fade-in">
                   {getPageStickers(currentPage).map((st) => renderStickerSlot(st))}
                 </div>
               );
@@ -351,6 +320,33 @@ export default function AlbumPage({ collection, onViewSticker, pastedCount, lang
 
       </div>
 
+      {/* Album collection status tracker board */}
+      <div className="w-full bg-white border border-gray-300 p-3 sm:p-4 lg:p-5 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 lg:gap-5 shadow-sm text-gray-800">
+        <div className="flex items-center space-x-3.5">
+          <div className="p-3 bg-[#002F6C]/10 rounded-xl text-[#002F6C]">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          <div className="text-left font-sans">
+            <h3 className="font-bold text-sm sm:text-base lg:text-lg text-[#002F6C] uppercase tracking-tight">{t.progressionTitle}</h3>
+            <p className="text-[clamp(0.6875rem,0.9vw,0.875rem)] italic text-gray-500">
+              {t.pastedCountLabel}: <span className="text-[#002F6C] font-bold">{pastedCount}</span> {t.ofLabel} {totalPossible} {t.spotsLabel}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 max-w-md w-full font-sans">
+          <div className="flex justify-between items-center mb-1 text-[clamp(0.625rem,0.75vw,0.75rem)] font-bold tracking-wider text-gray-400 uppercase">
+            <span>{t.progressLabel}</span>
+            <span className="text-[#002F6C] font-bold">{progressPercent}%</span>
+          </div>
+          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden p-0.5">
+            <div
+              className="h-full bg-[#002F6C] rounded-full transition-all duration-700"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </div>
 
     </div>
   );

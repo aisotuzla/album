@@ -220,16 +220,16 @@ export default function App() {
       <div className="bg-gradient-to-r from-[#002F6C] via-[#FFCD00] to-[#002F6C] h-1.5 w-full shadow-md shrink-0" />
 
       {/* Main Navbar */}
-      <header className="mx-auto flex w-full max-w-[450px] flex-row items-center justify-between gap-2 border-b border-[#002F6C]/20 px-3 py-2.5 mb-2">
+      <header className="mx-auto flex w-full max-w-screen-2xl flex-row items-center justify-between gap-2 border-b border-[#002F6C]/20 px-3 py-2.5 mb-2 sm:px-5 lg:px-8">
 
         {/* Logo / Mascot brand */}
         <div className="flex min-w-0 flex-1 items-center gap-2 text-left">
-          <img src={logoImage} alt="Zmajevi BIH Logo" className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16" referrerPolicy="no-referrer" />
+          <img src={logoImage} alt="Zmajevi BIH Logo" className="h-11 w-11 shrink-0 object-contain min-[360px]:h-14 min-[360px]:w-14 sm:h-16 sm:w-16" referrerPolicy="no-referrer" />
           <div className="min-w-0">
-            <h1 className="truncate font-sans text-[10px] font-black uppercase leading-tight tracking-tight text-[#002F6C] sm:text-xs">
+            <h1 className="font-sans text-[clamp(0.625rem,1.2vw,0.875rem)] font-black uppercase leading-tight tracking-tight text-[#002F6C]">
               {UI_TRANSLATIONS[lang].title}
             </h1>
-            <p className="hidden truncate text-[9px] italic text-gray-600 min-[440px]:block">
+            <p className="text-[clamp(0.5625rem,1vw,0.75rem)] italic leading-tight text-gray-600">
               {UI_TRANSLATIONS[lang].subtitle}
             </p>
           </div>
@@ -279,7 +279,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[450px] px-3 py-2">
+      <main className="mx-auto w-full max-w-screen-2xl px-3 py-2 sm:px-5 lg:px-8">
         {activeTab === "album" && <div className="space-y-4">
           <AlbumPage collection={collection} onViewSticker={setSelectedSticker} pastedCount={pastedCount} lang={lang}  />
           <section className="rounded-2xl border border-transparent bg-transparent p-2 text-left shadow-none">
@@ -293,7 +293,7 @@ export default function App() {
         {activeTab === "trades" && <TradeMarket wallet={wallet} onWalletChange={setWallet} collection={collection} onTradeCompleted={handleTradeCompleted} onSelfTradePosted={handleSelfTradePosted} tradeOffers={tradeOffers} onRemoveTradeOffer={handleRemoveTradeOffer} lang={lang} sandboxMode={sandboxMode} />}
         {activeTab === "history" && <HistoryPage lang={lang} />}
       </main>
-      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-[#071b3a]/95 px-1 pb-[env(safe-area-inset-bottom)] pt-1.5 text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] backdrop-blur-lg"><div className="mx-auto grid max-w-[450px] grid-cols-5 gap-1">{([{ id: "album", label: "Album", icon: BookOpen }, { id: "wallet", label: lang === "BS" ? "Novčanik" : "Wallet", icon: WalletCards }, { id: "packs", label: lang === "BS" ? "Paketi" : "Packs", icon: ShoppingBag }, { id: "history", label: lang === "BS" ? "Historija" : "History", icon: History }, { id: "trades", label: lang === "BS" ? "Tržište" : "Market", icon: ArrowLeftRight }] as const).map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? "page" : undefined} onClick={() => setActiveTab(id)} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[9px] font-extrabold uppercase tracking-wide transition ${activeTab === id ? "bg-[#FFCD00] text-[#002F6C]" : "text-white/75 hover:bg-white/10 hover:text-white"}`}><Icon className="h-5 w-5"/><span>{label}</span></button>)}</div></nav>
+      <nav aria-label="Main navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/20 bg-[#071b3a]/95 px-1 pb-[env(safe-area-inset-bottom)] pt-1.5 text-white shadow-[0_-8px_30px_rgba(0,0,0,0.25)] backdrop-blur-lg"><div className="mx-auto grid max-w-screen-2xl grid-cols-5 gap-1 sm:gap-2">{([{ id: "album", label: "Album", icon: BookOpen }, { id: "wallet", label: lang === "BS" ? "Novčanik" : "Wallet", icon: WalletCards }, { id: "packs", label: lang === "BS" ? "Paketi" : "Packs", icon: ShoppingBag }, { id: "history", label: lang === "BS" ? "Historija" : "History", icon: History }, { id: "trades", label: lang === "BS" ? "Tržište" : "Market", icon: ArrowLeftRight }] as const).map(({ id, label, icon: Icon }) => <button key={id} aria-current={activeTab === id ? "page" : undefined} onClick={() => setActiveTab(id)} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[clamp(0.5625rem,0.8vw,0.75rem)] font-extrabold uppercase tracking-wide transition ${activeTab === id ? "bg-[#FFCD00] text-[#002F6C]" : "text-white/75 hover:bg-white/10 hover:text-white"}`}><Icon className="h-5 w-5"/><span>{label}</span></button>)}</div></nav>
       {/* ================= 600px x 700px DETAILED STICKER MODAL ================= */}
       {selectedSticker && (
         <CardDetail

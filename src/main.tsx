@@ -40,7 +40,7 @@ class RootErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
           alignItems: 'center',
           justifyContent: 'center',
           padding: '2rem',
-          backgroundColor: '#0f172a',
+          backgroundColor: '#0a1657',
           color: '#f8fafc',
           fontFamily: 'sans-serif',
           textAlign: 'center'
@@ -52,7 +52,7 @@ class RootErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState
             {this.state.error?.message || 'An unexpected error occurred while rendering.'}
           </p>
           <pre style={{
-            background: '#1e293b',
+            background: '#040b6be3',
             padding: '1rem',
             borderRadius: '0.5rem',
             fontSize: '0.75rem',

@@ -4,7 +4,7 @@ export type { Language } from "../types";
 export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
   BS: {
     title: "BOSNA I HERCEGOVINA - S.P. 2026",
-    subtitle: "Zvanični digitalni Web3 album sa sličicama reprezentacije",
+    subtitle: "Fan Collectors Web3 Sticker Album",
     arenaHum: "Atmosfera",
     connectedAddress: "POVEZANA ADRESA",
     walletOffline: "Novčanik je van mreže",
@@ -230,7 +230,7 @@ export const UI_TRANSLATIONS: Record<Language, Record<string, string>> = {
   },
   EN: {
     title: "BOSNIA WORLD CUP 2026 COLLECTION",
-    subtitle: "Official Collector's Web3 Sticker Album",
+    subtitle: "Fan Collectors Web3 Sticker Album",
     arenaHum: "Arena Hum",
     connectedAddress: "CONNECTED ADDRESS",
     walletOffline: "Wallet Offline",
